@@ -14,11 +14,12 @@ const addCast = async (req, res) => {
         cast.profile_path = profile_path
         cast.birthYear = birthYear
 
-        try {
+        console.log(cast);
+        // try {
             await cast.save();
-        } catch (error) {
-            console.log(error);
-        }
+        // } catch (error) {
+        //     console.log(error);
+        // }
         responseHandler.created(res, cast)
     } catch {
         responseHandler.error(res, "Thêm cast không thành công.")
