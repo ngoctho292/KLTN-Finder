@@ -8,7 +8,7 @@ const router = express.Router()
 
 router.post(
     "/",
-    body("charater")
+    body("character")
         .exists()
         .withMessage("character is required")
         .isLength({ min: 1 })
