@@ -1,6 +1,6 @@
 import { Route, Routes } from 'react-router-dom'
 
-import { Home, Login, Register, Public } from './page/public'
+import { Home, Login, Register, Public, Movies, Movieseris, Mylist } from './page/public'
 
 
 function App() {
@@ -10,8 +10,10 @@ function App() {
         <Route path='login' element={<Login />} />
         <Route path='register' element={<Register />} />
         <Route path='/*' element={<Public />} >
-          <Route path='home' element={<Home />} />
-
+          <Route path='' element={<Home />} />
+          <Route path='movie' element={<Movies />} />
+          <Route path='movieseris' element={<Movieseris />} />
+          <Route path='mylist' element={<Mylist />} />
         </Route>
       </Routes>
     </>
