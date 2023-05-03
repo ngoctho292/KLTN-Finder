@@ -43,7 +43,7 @@ const signup = async (req, res) => {
             ...userWithoutId, // Kế thừa props từ _doc. _doc chứa tất cả các key value trừ _id của đối tượng
         });
     } catch (error) {
-        responseHandler.error(res);
+        responseHandler.error(res, "Đăng nhập thất bại");
     }
 }
 
@@ -75,7 +75,7 @@ const signin = async (req, res) => {
       access_token: token
     });
   } catch (error) {
-    responseHandler.error(res)
+    responseHandler.error(res, "Đăng ký không thành công")
   }
 }
 
@@ -101,7 +101,7 @@ const updatePassword = async (req, res) => {
             message: "Đổi mật khẩu thành công!"
         })
     } catch {
-        responseHandler.error(res)
+        responseHandler.error(res, "Đổi mật khẩu không thành công!");
     }
 }
 
@@ -114,7 +114,7 @@ const getInfo = async (req, res) => {
         
         responseHandler.ok(res, user)
     } catch {
-        responseHandler.error(res)
+        responseHandler.error(res, "Lấy danh sách user không thành công")
     }
 }
 
@@ -131,7 +131,7 @@ const getUserById = async (req, res) => {
 
         responseHandler.ok(res, user)
     } catch {
-        responseHandler.error(res)
+        responseHandler.error(res, `Tìm user ID: ${userId} không thành công`)
     }
 }
 

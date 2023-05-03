@@ -6,6 +6,13 @@ import castController from "../controllers/cast.controller.js"
 
 const router = express.Router()
 
+router.get("/", tokenMiddleware.auth, castController.getAllCasts);
+router.get(
+    "/:castId",
+    tokenMiddleware.auth,
+    castController.getCastById
+);
+
 router.post(
     "/",
     body("character")
@@ -31,8 +38,7 @@ router.post(
     tokenMiddleware.auth,
     requestHandler.validate,
     castController.addCast,
-);
-
+)
 
 router.delete(
     "/:castId",

@@ -28,7 +28,7 @@ const auth = async (req, res, next) => {
     if (!tokenDecoded) return responseHandler.unauthorize(res)
 
     // Tìm user trong MongoDB
-    const user = await userModel.findById(tokenDecoded.data)
+    const user = await userModel.findById(tokenDecoded.id)
 
     // Nếu không có trả lỗi 401
     if (!user) return responseHandler.unauthorize(res)
@@ -71,7 +71,7 @@ const tokenGlobal = async (req, res) => {
             client_secret
         });
     } catch {
-        responseHandler.error(res);
+        responseHandler.error(res, "Lỗi token");
     }
 };
 

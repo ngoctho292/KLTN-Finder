@@ -84,7 +84,7 @@ const deleteMovie = async (req, res) => {
       message: `Xóa thành công phim có ID: ${filmId}`
     })
   } catch {
-    responseHandler.error(res)
+    responseHandler.error(res,"Xóa phim thất bại")
   }
 };
 
