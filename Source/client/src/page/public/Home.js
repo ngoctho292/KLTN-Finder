@@ -14,36 +14,7 @@ import "swiper/css/pagination";
 import { Pagination } from "swiper";
 const Home = () => {
 
-    const { BsFillPlayFill } = icons
-    var settings = {
-        dots: false,
-        infinite: false,
-        speed: 500,
-        slidesToShow: 7,
-        slidesToScroll: 7
-    };
-
-    const livestream = [
-        {
-            text: '1'
-        },
-        {
-            text: '1'
-        },
-        {
-            text: '1'
-        },
-        {
-            text: '1'
-        },
-        {
-            text: '1'
-        },
-        {
-            text: '1'
-        },
-
-    ]
+    const { BsFillPlayFill, AiFillBell } = icons
 
     return (
         <div className='flex flex-col w-full '>

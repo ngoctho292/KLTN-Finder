@@ -30,8 +30,8 @@ const Header = () => {
             </div>
 
             <div className="flex items-center gap-4 text-white">
-                <AiFillBell size={25} />
                 <BiSearchAlt2 size={25} />
+                <AiFillBell size={25} />
                 <img src={user} alt="user" className='w-[48px] h-12 rounded-full border border-blue-500' />
             </div>
         </div>

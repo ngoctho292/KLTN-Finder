@@ -10,7 +10,7 @@ const Public = () => {
                 <Header />
             </div>
 
-            <div className="w-full  border border-blue-500">
+            <div className="w-full">
                 <Outlet />
             </div>
         </div>
