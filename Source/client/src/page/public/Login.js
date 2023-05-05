@@ -54,6 +54,7 @@ const Login = ({onClose}) => {
         username,
         password,
       });
+      localStorage.setItem("token", res.data.access_token)
       // Lay body cua token
       const tokenBody = res.data.access_token.split(".")[1];
 
