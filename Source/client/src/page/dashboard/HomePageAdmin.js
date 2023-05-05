@@ -145,7 +145,18 @@ const HomePageAdmin = () => {
     }
   return (
     <div>
-      <ToastContainer />
+      <ToastContainer
+        position="bottom-left"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+      />
       <Box sx={{ display: "flex" }}>
         <CssBaseline />
         <AppBar position="fixed" open={open} sx={{ background: "#1A1D29" }}>
@@ -173,7 +184,7 @@ const HomePageAdmin = () => {
                 aria-expanded={openn ? "true" : undefined}
                 onClick={handleClick}
               >
-                {name.username}
+                {name.displayName}
               </Button>
               <Menu
                 id="basic-menu"

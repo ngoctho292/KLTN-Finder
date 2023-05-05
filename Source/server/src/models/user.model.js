@@ -18,7 +18,7 @@ const userSchema = new mongoose.Schema(
             required: true,
             select: false // Không được lấy ra khi query
         },
-        roles: { type: String, enum: ['user', 'admin'], default: ['user'] },
+        roles: { type: String, enum: ['user'], default: ['user'] },
         salt: {
             type: String,
             required: true,

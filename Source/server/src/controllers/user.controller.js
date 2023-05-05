@@ -169,19 +169,42 @@ const getUserByUsername = async (req, res) => {
     }
 }
 
+// const deleteUserById = async (req, res) => {
+//     try {
+//         const { userId } = req.params
+//         const checkUserId = await userModel.findByIdAndDelete(userId)
+//         if (!checkUserId) return responseHandler.notfound(res, `Không tìm thấy user có ID: ${userId}`);
+//         responseHandler.ok(res, {
+//             statusCode: 200,
+//             message: "Xoá user thành công",
+//         });
+//     } catch {
+//         responseHandler.error(res, "Xoá user thất bại")
+//     }
+// }
 const deleteUserById = async (req, res) => {
-    try {
-        const { userId } = req.params
-        const checkUserId = await userModel.findByIdAndDelete(userId)
-        if (!checkUserId) return responseHandler.notfound(res, `Không tìm thấy user có ID: ${userId}`);
-        responseHandler.ok(res, {
-            statusCode: 200,
-            message: "Xoá user thành công",
-        });
-    } catch {
-        responseHandler.error(res, "Xoá user thất bại")
-    }
-}
+  try {
+    const userId = req.params.userId.split(",");
+
+    const deletedUsers = await userModel.deleteMany({
+      _id: { $in: userId },
+    });
+    if (deletedUsers.deletedCount === 0) 
+      return responseHandler.notfound(
+        res,
+        `Không tìm thấy user có ID trong danh sách`
+      );
+    
+    responseHandler.ok(res, {
+        message: "Đã xoá các user thành công",
+        data: deletedUsers,
+      });
+    
+  } catch (error) {
+    responseHandler.error(res, error.message);
+  }
+};
+
 
 export default {
     signup,
