@@ -23,12 +23,13 @@ const tokenDecode = (req) => {
 const auth = async (req, res, next) => {
     // Lấy token đã giải mã
     const tokenDecoded = tokenDecode(req)
+    // console.log(tokenDecoded);
 
     // Nếu không có token sẽ trả lỗi 401
     if (!tokenDecoded) return responseHandler.unauthorize(res)
 
     // Tìm user trong MongoDB
-    const user = await userModel.findById(tokenDecoded.id)
+    const user = await userModel.findById(tokenDecoded.data)
 
     // Nếu không có trả lỗi 401
     if (!user) return responseHandler.unauthorize(res)

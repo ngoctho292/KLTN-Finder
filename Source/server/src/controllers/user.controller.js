@@ -1,6 +1,7 @@
 import jsonwebtoken from "jsonwebtoken";
 import userModel from "../models/user.model.js";
 import responseHandler from "../handlers/response.handler.js";
+import { response } from "express";
 
 const signup = async (req, res) => {
   try {
@@ -157,10 +158,37 @@ const getUserById = async (req, res) => {
     }
 }
 
+const getUserByUsername = async (req, res) => {
+    try {
+        const { username } = req.body
+        const checkUserName = await userModel.findOne({ username }).select("username id displayName")
+        if (!checkUserName) return responseHandler.notfound(res, "Không tìm thấy username");
+        responseHandler.ok(res, checkUserName);
+    } catch {
+        responseHandler.error(res, "Tìm username thất bại")
+    }
+}
+
+const deleteUserById = async (req, res) => {
+    try {
+        const { userId } = req.params
+        const checkUserId = await userModel.findByIdAndDelete(userId)
+        if (!checkUserId) return responseHandler.notfound(res, `Không tìm thấy user có ID: ${userId}`);
+        responseHandler.ok(res, {
+            statusCode: 200,
+            message: "Xoá user thành công",
+        });
+    } catch {
+        responseHandler.error(res, "Xoá user thất bại")
+    }
+}
+
 export default {
-  signup,
-  signin,
-  getInfo,
-  getUserById,
-  updatePassword,
+    signup,
+    signin,
+    getInfo,
+    getUserById,
+    updatePassword,
+    getUserByUsername,
+    deleteUserById,
 };
