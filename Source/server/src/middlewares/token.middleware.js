@@ -27,7 +27,7 @@ const auth = async (req, res, next) => {
 
     // Nếu không có token sẽ trả lỗi 401
     if (!tokenDecoded) return responseHandler.unauthorize(res)
-
+    
     // Tìm user trong MongoDB
     const user = await userModel.findById(tokenDecoded.infor.id)
 
