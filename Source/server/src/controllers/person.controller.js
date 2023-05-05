@@ -9,7 +9,7 @@ const personDetail = async (req, res) => {
         
         return responseHandler.ok(res, person)
     } catch {
-        responseHandler.error(res)
+        responseHandler.error(res, "Lấy chi tiết cast thất bại")
     }
 }
 
@@ -21,7 +21,7 @@ const personMedias = async (req, res) => {
         
         return responseHandler.ok(res, medias)
     } catch {
-        responseHandler.error(res)
+        responseHandler.error(res, "Lấy danh sách cast thất bại")
     }
 }
 

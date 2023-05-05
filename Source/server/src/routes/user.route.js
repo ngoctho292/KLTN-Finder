@@ -94,6 +94,18 @@ router.post(
   favoriteController.addFavorite
 );
 
+router.get(
+  "/",
+  tokenMiddleware.auth,
+  userController.getUserByUsername
+)
+
+router.delete(
+  "/:userId",
+  tokenMiddleware.auth,
+  userController.deleteUserById
+)
+
 router.delete(
   "/favorites/:favoriteId",
   tokenMiddleware.auth,

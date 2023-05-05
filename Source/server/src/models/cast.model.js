@@ -1,12 +1,13 @@
 import modelOptions from "./model.options.js"
-import mongoose from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
 export default mongoose.model(
     "Cast",
     mongoose.Schema({
         character: {
             type: String,
-            require: true
+            require: true,
+            unique: true
         },
         profile_path: String,
         birthYear: Number,

@@ -1,6 +1,7 @@
 import jsonwebtoken from "jsonwebtoken";
 import userModel from "../models/user.model.js";
 import responseHandler from "../handlers/response.handler.js";
+import { response } from "express";
 
 const signup = async (req, res) => {
   try {
@@ -95,7 +96,7 @@ const signin = async (req, res) => {
       access_token: token,
     });
   } catch (error) {
-    responseHandler.error(res);
+    responseHandler.error(res, "Đăng ký không thành công")
   }
 };
 
@@ -132,13 +133,13 @@ const getInfo = async (req, res) => {
   try {
     const user = await userModel.find();
 
-    if (!user) return responseHandler.notfound(res);
-
-    responseHandler.ok(res, user);
-  } catch {
-    responseHandler.error(res);
-  }
-};
+        if (!user) return responseHandler.notfound(res)
+        
+        responseHandler.ok(res, user)
+    } catch {
+        responseHandler.error(res, "Lấy danh sách user không thành công")
+    }
+}
 
 // Tìm user theo ID
 const getUserById = async (req, res) => {
@@ -151,16 +152,43 @@ const getUserById = async (req, res) => {
         message: "Không tìm thấy thông tin người dùng.",
       });
 
-    responseHandler.ok(res, user);
-  } catch {
-    responseHandler.error(res);
-  }
-};
+        responseHandler.ok(res, user)
+    } catch {
+        responseHandler.error(res, `Tìm user ID: ${userId} không thành công`)
+    }
+}
+
+const getUserByUsername = async (req, res) => {
+    try {
+        const { username } = req.body
+        const checkUserName = await userModel.findOne({ username }).select("username id displayName")
+        if (!checkUserName) return responseHandler.notfound(res, "Không tìm thấy username");
+        responseHandler.ok(res, checkUserName);
+    } catch {
+        responseHandler.error(res, "Tìm username thất bại")
+    }
+}
+
+const deleteUserById = async (req, res) => {
+    try {
+        const { userId } = req.params
+        const checkUserId = await userModel.findByIdAndDelete(userId)
+        if (!checkUserId) return responseHandler.notfound(res, `Không tìm thấy user có ID: ${userId}`);
+        responseHandler.ok(res, {
+            statusCode: 200,
+            message: "Xoá user thành công",
+        });
+    } catch {
+        responseHandler.error(res, "Xoá user thất bại")
+    }
+}
 
 export default {
-  signup,
-  signin,
-  getInfo,
-  getUserById,
-  updatePassword,
+    signup,
+    signin,
+    getInfo,
+    getUserById,
+    updatePassword,
+    getUserByUsername,
+    deleteUserById,
 };

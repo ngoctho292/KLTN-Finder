@@ -23,6 +23,7 @@ const tokenDecode = (req) => {
 const auth = async (req, res, next) => {
     // Lấy token đã giải mã
     const tokenDecoded = tokenDecode(req)
+    // console.log(tokenDecoded);
 
     // Nếu không có token sẽ trả lỗi 401
     if (!tokenDecoded) return responseHandler.unauthorize(res)
@@ -71,7 +72,7 @@ const tokenGlobal = async (req, res) => {
             client_secret
         });
     } catch {
-        responseHandler.error(res);
+        responseHandler.error(res, "Lỗi token");
     }
 };
 

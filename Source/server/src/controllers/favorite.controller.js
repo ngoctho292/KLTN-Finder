@@ -24,7 +24,7 @@ const addFavorite = async (req, res) => {
 
         return responseHandler.created(res, favorite)
     } catch {
-        responseHandler.error(res)
+        responseHandler.error(res, "Thêm vào yêu thích không thành công")
     }
 }
 
@@ -41,7 +41,7 @@ const removeFavorite = async (req, res) => {
 
         responseHandler.ok(res)
     } catch {
-        responseHandler.error(res)
+        responseHandler.error(res, "Xóa khỏi yêu thích không thành công")
     }
 }
 
@@ -53,7 +53,7 @@ const getFavoritesOfUser = async (req, res) => {
         
         responseHandler.ok(res, favorite)
     } catch {
-        responseHandler.error(res)
+        responseHandler.error(res, "Lấy danh sách yêu thích người dùng không thành công")
     }
 }
 
