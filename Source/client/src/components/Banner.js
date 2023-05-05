@@ -2,8 +2,11 @@ import React from 'react'
 
 import movies from '../asset/image/logomoives.png'
 import background from '../asset/image/background.svg'
+import icons from '../ultis/icons'
 
-const Banner = () => {
+const Banner = ({ banerModal }) => {
+    const { BsFillPlayFill, SlLike, AiOutlinePlus, AiOutlineExclamationCircle } = icons
+
     return (
         <div className='relative'>
             <img src={background} alt="background" className='w-full object-cover mt-[-80px] z-0' />
@@ -11,20 +14,28 @@ const Banner = () => {
                 <div className="absolute top-[80px] pt-8 text-white">
                     {/* phim h.hinh */}
                 </div>
-                <div className="absolute top-[35%]">
+                <div className="absolute top-[40%]">
                     <img src={movies} alt="movives" />
                 </div>
-                <div className="absolute top-[60%]">
+                <div className="absolute top-[65%]">
                     <div className="flex flex-col">
                         <p className='w-[45%] text-white text-[20px] leading-5 mb-5'>Sau sự sụp đổ của Đế chế Thiên hà, tình trạng vô luật pháp đã lan rộng khắp Thiên hà. Một tay súng đơn độc vượt qua Outer Rims, kiếm được vị trí thợ săn tiền thưởng</p>
-                        <div>
-                            <button className=' rounded-md bg-white text-black text-center font-semibold py-2 px-5 mr-2 '>
-                                {/* <BsFillPlayFill /> */}
+                        <div className='flex items-center'>
+                            <button className='  flex items-center justify-center rounded-md bg-white text-black text-center font-semibold py-2 px-5 mr-2 '>
+                                <BsFillPlayFill size={35} />
                                 Phát
                             </button>
-                            <button className=' rounded-md bg-transparent text-black text-center font-semibold py-2 px-5 ml-2 border border-black'>
+
+                            {banerModal ? <div className="">
+                                <div className='flex text-center'>
+                                    <span className='w-[35px] h-[35px] border border-[#ddd] rounded-full flex items-center justify-center mr-1 cursor-pointer '> <AiOutlinePlus /></span>
+                                    <span className='w-[35px] h-[35px] border border-[#ddd] rounded-full flex items-center justify-center mr-1 cursor-pointer '><SlLike /></span>
+                                </div>
+
+                            </div> : <button className=' gap-2  flex items-center justify-center rounded-md bg-transparent text-white text-center font-bold py-2 px-5 ml-2 border border-white'>
+                                <AiOutlineExclamationCircle size={30} color='white' />
                                 Thông tin khác
-                            </button>
+                            </button>}
                         </div>
                     </div>
 
