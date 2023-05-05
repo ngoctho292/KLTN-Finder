@@ -1,4 +1,4 @@
-import apiConfig from "./api.config.js"
+import apiConfig from './api.config.js'
 
 const apiEndpoints = {
     mediaList: ({ mediaType, mediaCategory, page }) => apiConfig.getUrl(`${mediaType}/${mediaCategory}`, page),
@@ -9,7 +9,7 @@ const apiEndpoints = {
     mediaImages: ({ mediaType, mediaId }) => apiConfig.getUrl(`${mediaType}/${mediaId}/images`),
     mediaSearch: ({ mediaType, query, page }) => apiConfig.getUrl(`search/${mediaType}`, { query, page }),
     personDetail: ({ personId }) => apiConfig.getUrl(`person/${personId}`),
-    personMedias: ({personId}) => apiConfig.getUrl(`person/${personId}/combined_credits`)
+    personMedias: ({ personId }) => apiConfig.getUrl(`person/${personId}/combined_credits`),
 }
 
 export default apiEndpoints
