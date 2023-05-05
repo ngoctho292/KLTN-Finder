@@ -3,7 +3,7 @@ import mongoose, { Schema } from "mongoose";
 
 export default mongoose.model(
     "Cast",
-    mongoose.Schema({
+    mongoose.Schema([{
         character: {
             type: String,
             require: true,
@@ -12,5 +12,5 @@ export default mongoose.model(
         profile_path: String,
         birthYear: Number,
         summary: String
-    }, modelOptions)
+    }], modelOptions)
 )

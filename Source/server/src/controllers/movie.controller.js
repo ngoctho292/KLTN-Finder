@@ -19,7 +19,7 @@ const createMovie = async (req, res) => {
           video,
           runtime,
           cast,
-      } = req.body;
+    } = req.body;
 
       const [day = "", month = "", year = ""] = release_date.split(",");
 
@@ -38,7 +38,7 @@ const createMovie = async (req, res) => {
 
       const backdrop_pathParse = JSON.parse(backdrop_path);
       const castParse = JSON.parse(cast);
-
+      console.log(castParse);
       const movie = await new movieModel({
           type,
           title,
