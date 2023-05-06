@@ -1,8 +1,8 @@
-import modelOptions from "./model.options.js"
-import mongoose, {Schema} from "mongoose"
+import modelOptions from './model.options.js'
+import mongoose, { Schema } from 'mongoose'
 
 export default mongoose.model(
-    "Genre",
+    'Genre',
     mongoose.Schema(
         {
             name: {
@@ -13,21 +13,21 @@ export default mongoose.model(
         },
         {
             toJSON: {
-                virtuals: true, 
+                virtuals: true,
                 transform: (_, obj) => {
-                    delete obj._id;
-                    return obj;
+                    delete obj._id
+                    return obj
                 },
             },
             toObject: {
                 virtuals: true,
                 transform: (_, obj) => {
-                    delete obj._id;
-                    return obj;
+                    delete obj._id
+                    return obj
                 },
             },
             timestamps: false,
             versionKey: false,
         },
     ),
-);
+)

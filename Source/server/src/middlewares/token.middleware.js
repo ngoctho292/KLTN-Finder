@@ -1,14 +1,14 @@
-import responseHandler from "../handlers/response.handler.js"
-import userModel from "../models/user.model.js"
-import jsonwebtoken from "jsonwebtoken";
+import responseHandler from '../handlers/response.handler.js'
+import userModel from '../models/user.model.js'
+import jsonwebtoken from 'jsonwebtoken'
 
 const tokenDecode = (req) => {
     try {
-        const bearerHeader = req.headers["authorization"]
+        const bearerHeader = req.headers['authorization']
 
         if (bearerHeader) {
             // Lấy token từ BearerToken. Ex: "Bearer eyJhbGciOiJIUzI1NiIsInR5cC"
-            const token = bearerHeader.split(" ")[1]
+            const token = bearerHeader.split(' ')[1]
 
             // Xác thực token
             return jsonwebtoken.verify(token, process.env.TOKEN_SECRET)
@@ -25,14 +25,14 @@ const auth = async (req, res, next) => {
     const tokenDecoded = tokenDecode(req)
 
     // Nếu không có token sẽ trả lỗi 401
-    if (!tokenDecoded) return responseHandler.unauthorize(res)
+    if (!tokenDecoded) return responseHandler.unauthorize(res, 'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại!')
 
     // Tìm user trong MongoDB
-    const user = await userModel.findById(tokenDecoded.data)
+    const user = await userModel.findById(tokenDecoded.infor.id)
 
     // Nếu không có trả lỗi 401
-    if (!user) return responseHandler.unauthorize(res)
-    
+    if (!user) return responseHandler.unauthorize(res, 'Không tìm thấy user')
+
     // Gán user trong request = user trong MongoDB
     req.user = user
 
@@ -42,37 +42,37 @@ const auth = async (req, res, next) => {
 
 const tokenGlobal = async (req, res) => {
     try {
-        const { username, password, client_id, client_secret } = req.body;
+        const { username, password, client_id, client_secret } = req.body
 
         // Chỉ định các trường cần được trả về
-        const user = await userModel.findOne({ username }).select("username password salt id");
+        const user = await userModel.findOne({ username }).select('username password salt id')
 
-        if (!user) return responseHandler.badrequest(res, "User không tồn tại!");
+        if (!user) return responseHandler.badrequest(res, 'User không tồn tại!')
 
-        if (!user.validPassword(password)) return responseHandler.badrequest(res, "Sai mật khẩu, vui lòng thử lại!");
+        if (!user.validPassword(password)) return responseHandler.badrequest(res, 'Sai mật khẩu, vui lòng thử lại!')
 
         // Tạo token global truy cập, hạn 1h
         if (client_id === process.env.CLIENT_ID && client_secret === process.env.CLIENT_SECRET) {
-            var token = jsonwebtoken.sign({ data: user.id }, process.env.TOKEN_SECRET, { expiresIn: "1h" });
+            var token = jsonwebtoken.sign({ data: user.id }, process.env.TOKEN_SECRET, { expiresIn: '1h' })
         }
 
         // Gỡ pass và hash ra khỏi response
-        user.password = undefined;
-        user.salt = undefined;
+        user.password = undefined
+        user.salt = undefined
 
-        req.user = user;
+        req.user = user
 
         responseHandler.ok(res, {
             access_token: token,
-            token_type: "bearer",
-            expiry: "Hạn sử dụng 1h.",
+            token_type: 'bearer',
+            expiry: 'Hạn sử dụng 1h.',
             username,
             client_id,
-            client_secret
-        });
+            client_secret,
+        })
     } catch {
-        responseHandler.error(res);
+        responseHandler.error(res, 'Lỗi token')
     }
-};
+}
 
-export default { auth, tokenDecode, tokenGlobal };
+export default { auth, tokenDecode, tokenGlobal }

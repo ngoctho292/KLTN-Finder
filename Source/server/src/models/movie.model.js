@@ -1,8 +1,8 @@
-import mongoose, { Schema } from "mongoose";
-import modelOptions from "./model.options.js";
+import mongoose, { Schema } from 'mongoose'
+import modelOptions from './model.options.js'
 
 export default mongoose.model(
-    "Movie",
+    'Movie',
     mongoose.Schema(
         {
             // filmId: {
@@ -11,7 +11,7 @@ export default mongoose.model(
             // },
             type: {
                 type: String,
-                enum: ["tv", "movie"],
+                enum: ['tv', 'movie'],
                 required: true,
             },
             title: {
@@ -66,4 +66,4 @@ export default mongoose.model(
         },
         modelOptions,
     ),
-);
+)

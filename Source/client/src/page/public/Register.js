@@ -9,7 +9,6 @@ import "react-toastify/dist/ReactToastify.css";
 
 import logo from "../../asset/image/logo.png";
 const Register = ({onClose}) => {
-  const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
   const [validationMsg, setValidationMsg] = useState({});
 
@@ -75,6 +74,7 @@ const Register = ({onClose}) => {
     }
   };
   const [username, setUsername] = useState();
+  const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState();
   const [displayName, setDisplayName] = useState();
   const navigate = useNavigate();

@@ -6,7 +6,7 @@ const modelOptions = {
         transform: (_, obj) => {
             delete obj._id
             return obj
-        }
+        },
     },
     // toObject chuyển đổi object Mongoose sang object thường
     toObject: {
@@ -14,10 +14,10 @@ const modelOptions = {
         transform: (_, obj) => {
             delete obj._id
             return obj
-        }
+        },
     },
     versionKey: false, // Loại trường __v khỏi object
-    timestamps: true // Automate 'createdAt' và 'updateAt' vào object
+    timestamps: true, // Automate 'createdAt' và 'updateAt' vào object
 }
 
 export default modelOptions

@@ -1,57 +1,52 @@
-import mongoose, { model } from "mongoose";
-import modelOptions from "./model.options.js"
-import crypto from "crypto"
+import mongoose, { model } from 'mongoose'
+import modelOptions from './model.options.js'
+import crypto from 'crypto'
 
 const userSchema = new mongoose.Schema(
     {
         username: {
             type: String,
             required: true,
-            unique: true // Duy nhất
+            unique: true, // Duy nhất
         },
         displayName: {
             type: String,
-            required: true
+            required: true,
         },
         password: {
             type: String,
             required: true,
-            select: false // Không được lấy ra khi query
+            select: false, // Không được lấy ra khi query
         },
-        roles: { type: String, enum: ['user', 'admin'], default: ['user'] },
+        roles: { type: String, enum: ['user'], default: 'user' },
         salt: {
             type: String,
             required: true,
-            select: false
+            select: false,
         },
     },
-    modelOptions
+    modelOptions,
 )
 
 userSchema.methods.setPassword = function (password) {
-
     // Tạo một chuỗi ngẫu nhiên
     this.salt = crypto.randomBytes(16).toString('hex')
 
     // Băm mật khẩu
-    this.password = crypto.pbkdf2Sync(
-        password, // Mật khẩu người dùng
-        this.salt,
-        1000, // Số lần lặp
-        64, // Độ dài kết quả băm
-        "sha512" // Thuật toán để băm
-    ).toString("hex")
+    this.password = crypto
+        .pbkdf2Sync(
+            password, // Mật khẩu người dùng
+            this.salt,
+            1000, // Số lần lặp
+            64, // Độ dài kết quả băm
+            'sha512', // Thuật toán để băm
+        )
+        .toString('hex')
 }
 
 // Kiểm tra mật khẩu đã nhập có match với DB
 userSchema.methods.validPassword = function (password) {
-    const hash = crypto.pbkdf2Sync(
-        password,
-        this.salt,
-        1000,
-        64,
-        "sha512"
-    ).toString("hex")
+    const hash = crypto.pbkdf2Sync(password, this.salt, 1000, 64, 'sha512').toString('hex')
 
     return this.password === hash
 }

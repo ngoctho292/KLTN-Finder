@@ -1,40 +1,62 @@
-import React from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import InputBase from "@mui/material/InputBase";
 import SearchIcon from "@mui/icons-material/Search";
-const columns = [
-  { field: "id", headerName: "ID", width: 90 },
-  { field: "firstName", headerName: "First name", width: 160 },
-  { field: "lastName", headerName: "Last name", width: 160 },
-  {
-    field: "age",
-    headerName: "Age",
-    type: "number",
-    width: 90,
-  },
-  {
-    field: "fullName",
-    headerName: "Full name",
-    description: "This column has a value getter and is not sortable.",
-    sortable: false,
-    width: 160,
-    valueGetter: (params) =>
-      `${params.row.firstName || ""} ${params.row.lastName || ""}`,
-  },
-];
+import axios from "axios";
+import { Box, Modal, Button } from "@mui/material";
 
-const rows = [
-  { id: 1, lastName: "Snow", firstName: "Jon", age: 35 },
-  { id: 2, lastName: "Lannister", firstName: "Cersei", age: 42 },
-  { id: 3, lastName: "Lannister", firstName: "Jaime", age: 45 },
-  { id: 4, lastName: "Stark", firstName: "Arya", age: 16 },
-  { id: 5, lastName: "Targaryen", firstName: "Daenerys", age: null },
-  { id: 6, lastName: "Melisandre", firstName: null, age: 150 },
-  { id: 7, lastName: "Clifford", firstName: "Ferrara", age: 44 },
-  { id: 8, lastName: "Frances", firstName: "Rossini", age: 36 },
-  { id: 9, lastName: "Roxie", firstName: "Harvey", age: 65 },
-];
+const style = {
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  width: 500,
+  height: 600,
+  boxShadow: 24,
+};
 const ManageUser = () => {
+  const [users, setUsers] = useState([]);
+  const [keytable, setKeytable] = useState(0);
+  useEffect(() => {
+    const getUser = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const config = {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        };
+        const response = await axios.get("http://localhost:5000/api/v1/user/info", config);
+        setUsers(response.data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    getUser();
+  },[])
+  const columns = useMemo(() => [
+    { field: "displayName", headerName: "Display Name", width: 200 },
+    { field: "username", headerName: "Username", width: 200 },
+    { field: "roles", headerName: "Role", width: 200 },
+    {
+      field: "createdAt",
+      headerName: "Created At",
+      width: 250,
+      
+    },
+    { field: "id", headerName: "Id", width: 220 },
+  ]);
+  const [open, setOpen] = React.useState(false);
+  const handleOpen = () => {
+    setOpen(true);
+  };
+  const handleClose = () => {
+    setOpen(false);
+  };
+  const onSelectHandle = (ids) => {
+    const selectRowData = ids.map(id => users.find(row => row.id === id))
+    console.log(selectRowData)
+  }
   return (
     <div className="w-full">
       <h2 className="text-2xl w-full">Manage account</h2>
@@ -58,7 +80,10 @@ const ManageUser = () => {
           </button>
         </div>
         <div>
-          <button className="bg-[#3778DA] h-10 w-[120px] mt-5 mr-5 rounded-md text-white">
+          <button
+            className="bg-[#3778DA] h-10 w-[120px] mt-5 mr-5 rounded-md text-white"
+            onClick={handleOpen}
+          >
             Add user
           </button>
           <button className="bg-[#24AB62] h-10 w-[120px] mt-5 mr-5 rounded-md text-white">
@@ -67,15 +92,31 @@ const ManageUser = () => {
           <button className="bg-[#E14444] h-10 w-[120px] mt-5 rounded-md text-white">
             Delete user
           </button>
+          <Modal
+            open={open}
+            onClose={handleClose}
+            aria-labelledby="parent-modal-title"
+            aria-describedby="parent-modal-description"
+          >
+            <Box sx={style}>
+              <ModalAddUser setKeytable={setKeytable} onClose={handleClose} />
+            </Box>
+          </Modal>
         </div>
       </div>
       <div className="w-full">
         <DataGrid
-          rows={rows}
+          key={keytable}
           columns={columns}
-          paginationModel={{ page: 0, pageSize: 5 }}
+          rows={users}
+          initialState={{
+            pagination: {
+              paginationModel: { page: 0, pageSize: 5 },
+            },
+          }}
+          pageSizeOptions={[5, 10]}
           checkboxSelection
-          className="w-full"
+          onRowSelectionModelChange={ids => onSelectHandle(ids)}
         />
       </div>
     </div>
@@ -83,3 +124,96 @@ const ManageUser = () => {
 };
 
 export default ManageUser;
+
+
+export const ModalAddUser = ({ onClose }) => {
+  const [keytable, setKeytable] = useState(0);
+
+  const [username, setUsername] = useState();
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState();
+  const [displayName, setDisplayName] = useState();
+
+  const onAddUser = async () => {
+    try {
+      const res = await axios.post("http://localhost:5000/api/v1/user/signup", {
+        username,
+        password,
+        confirmPassword,
+        displayName,
+      });
+      console.log(res);
+      if (res.status === 201) {
+        console.log(res.statusText);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+    onClose();
+    setKeytable(keytable + 1);
+  };
+  const onChangeUsername = (event) => {
+    const value = event.target.value;
+    setUsername(value);
+  };
+  const onChangePass = (event) => {
+    const value = event.target.value;
+    setPassword(value);
+  };
+  const onChangeConfirmPass = (event) => {
+    const value = event.target.value;
+    setConfirmPassword(value);
+  };
+  const onChangeDisplayName = (event) => {
+    const value = event.target.value;
+    setDisplayName(value);
+  };
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter") {
+      onAddUser();
+    }
+  };
+  return (
+    <div className="bg-[#1E1E1E] h-full flex items-center justify-center flex-col text-white">
+      <div className="flex flex-col text-white mt-8">
+        <h3 className="text-xl font-semibold">Add user</h3>
+        <input
+          type="text"
+          className="w-[374px] h-12 mt-3 rounded-md p-3 bg-[#31343E] text-[#C8C9CB]"
+          placeholder="Emai hoặc số điện thoại..."
+          onChange={onChangeUsername}
+          onKeyPress={handleKeyPress}
+        />
+        <input
+          type="text"
+          className="w-[374px] h-12 mt-3 rounded-md p-3 bg-[#31343E] text-[#C8C9CB]"
+          placeholder="Nhập tên hiển thị"
+          onChange={onChangeDisplayName}
+          onKeyPress={handleKeyPress}
+        />
+
+        <input
+          type="password"
+          className="w-[374px] h-12 mt-3 rounded-md p-3 bg-[#31343E] text-[#C8C9CB] "
+          placeholder="Mật khẩu"
+          onChange={onChangePass}
+          onKeyPress={handleKeyPress}
+        />
+        <input
+          type="password"
+          className="w-[374px] h-12 mt-3 rounded-md p-3 bg-[#31343E] text-[#C8C9CB]"
+          placeholder="Nhập lại mật khẩu"
+          onChange={onChangeConfirmPass}
+          onKeyPress={handleKeyPress}
+        />
+        <button
+          className="bg-[#037AEB] h-12 w-[374px] mt-5 rounded-md p-3 font-semibold "
+          onClick={onAddUser}
+        >
+          SUBMIT
+        </button>
+      </div>
+    </div>
+  );
+};
+
