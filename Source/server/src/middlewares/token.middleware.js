@@ -31,7 +31,7 @@ const auth = async (req, res, next) => {
     const user = await userModel.findById(tokenDecoded.infor.id)
 
     // Nếu không có trả lỗi 401
-    if (!user) return responseHandler.unauthorize(res, 'k co user')
+    if (!user) return responseHandler.unauthorize(res, 'Không tìm thấy user')
 
     // Gán user trong request = user trong MongoDB
     req.user = user
