@@ -1,13 +1,14 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
 
-import { Header } from "../../components";
+import { Header, Footer } from '../../components'
+
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const Public = () => {
   return (
-    <div className="flex flex-col bg-[#1E1E1E]">
+    <div className="flex flex-col bg-[#1E1E1E] text-white">
       <ToastContainer
         position="bottom-left"
         autoClose={5000}
@@ -24,12 +25,13 @@ const Public = () => {
       <div className="w-full h-[80px] fixed top-0 left-0 right-0 z-50">
         <Header />
       </div>
-
-      <div className="w-full  border border-blue-500">
+      <div className="w-full ">
         <Outlet />
       </div>
+      <Footer />
     </div>
   );
-};
+}
+
 
 export default Public;
