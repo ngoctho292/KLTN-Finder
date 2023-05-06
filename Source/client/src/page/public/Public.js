@@ -1,7 +1,7 @@
 import React from 'react'
 import { Outlet } from 'react-router-dom'
 
-import { Header } from '../../components'
+import { Header, Footer } from '../../components'
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -17,6 +17,7 @@ const Public = () => {
       <div className="w-full ">
         <Outlet />
       </div>
+      <Footer />
     </div>
   );
 }
