@@ -8,10 +8,10 @@ import authorizeMiddleware from '../middlewares/authorize.middleware.js'
 const router = express.Router()
 
 // http://localhost:5000/api/v1/movies/
-router.get('/', tokenMiddleware.auth, movieController.getAllMovies)
+router.get('/', movieController.getAllMovies)
 
 // http://localhost:5000/api/v1/movies/6446aaa86d3e062a1e82b241
-router.get('/:filmId', tokenMiddleware.auth, movieController.getMovieById)
+router.get('/:filmId', movieController.getMovieById)
 
 router.post(
     '/',
