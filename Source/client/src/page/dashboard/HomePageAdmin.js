@@ -1,4 +1,4 @@
-import React from 'react'
+import React from "react";
 import { styled, useTheme } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import MuiDrawer from "@mui/material/Drawer";
@@ -13,11 +13,12 @@ import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import Brightness7 from "@mui/icons-material/Brightness7";
+import Brightness4 from "@mui/icons-material/Brightness4";
 import LiveTvIcon from "@mui/icons-material/LiveTv";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import CommentIcon from "@mui/icons-material/Comment";
-import DraftsIcon from "@mui/icons-material/Drafts";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import Button from "@mui/material/Button";
@@ -25,11 +26,12 @@ import Menu from "@mui/material/Menu";
 import ManageComment from "../../components/admin/ManageComment";
 import ManageUser from "../../components/admin/ManageUser";
 import ManageMovie from "../../components/admin/ManageMovie";
-import {
-  MenuItem
-} from "@mui/material";
+import { MenuItem } from "@mui/material";
+import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import imgUser from "../../asset/image/user.png";
+
 
 const iconList = [
   <AccountCircleIcon />,
@@ -37,6 +39,7 @@ const iconList = [
   <CommentIcon />,
   // Thêm các icon khác vào đây
 ];
+
 const componentMap = {
   Account: ManageUser,
   Movie: ManageMovie,
@@ -112,6 +115,15 @@ const Drawer = styled(MuiDrawer, {
 const HomePageAdmin = () => {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
+  const [light, setLight] = React.useState(true);
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const [selectedItem, setSelectedItem] = React.useState("Account");
+
+  const darkTheme = createTheme({
+    palette: {
+      mode: light ? "light" : "dark",
+    },
+  });
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -121,30 +133,32 @@ const HomePageAdmin = () => {
     setOpen(false);
   };
 
-    // const [openn, setOpenn] = useState(false);
-    const [selectedItem, setSelectedItem] = React.useState("Account");
+  const handleItemClick = (item) => {
+    setSelectedItem(item);
+  };
 
-    const handleItemClick = (item) => {
-      setSelectedItem(item);
-    };
-    const ComponentToRender = componentMap[selectedItem];
+  const ComponentToRender = componentMap[selectedItem];
 
-    const [anchorEl, setAnchorEl] = React.useState(null);
-    const openn = Boolean(anchorEl);
-    const handleClick = (event) => {
-      setAnchorEl(event.currentTarget);
-    };
-    const handleClose = () => {
-      setAnchorEl(null);
-    };
-    const name = JSON.parse(localStorage.getItem("infor"));
-    const handleLogout = () => {
-      localStorage.removeItem("infor")
-      localStorage.removeItem("role");
-      window.location.href = "/";
-    }
+  const openn = Boolean(anchorEl);
+
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const name = JSON.parse(localStorage.getItem("infor"));
+
+  const handleLogout = () => {
+    localStorage.removeItem("infor");
+    localStorage.removeItem("role");
+    window.location.href = "/";
+  };
+
   return (
-    <div>
+    <ThemeProvider theme={darkTheme}>
       <ToastContainer
         position="bottom-left"
         autoClose={3000}
@@ -159,7 +173,7 @@ const HomePageAdmin = () => {
       />
       <Box sx={{ display: "flex" }}>
         <CssBaseline />
-        <AppBar position="fixed" open={open} sx={{ background: "#1A1D29" }}>
+        <AppBar position="fixed" open={open} sx={{ background: "#3778DA" }}>
           <Toolbar>
             <IconButton
               color="inherit"
@@ -176,13 +190,17 @@ const HomePageAdmin = () => {
             <Typography variant="h6" noWrap component="div">
               Dashboard
             </Typography>
-            <div style={{ marginLeft: "auto" }}>
+            <div style={{ marginLeft: "auto", display: "flex" }}>
+              <IconButton onClick={() => setLight(!light)}>
+                {light ? <Brightness7 /> : <Brightness4 />}
+              </IconButton>
               <Button
                 id="basic-button"
                 aria-controls={openn ? "basic-menu" : undefined}
                 aria-haspopup="true"
                 aria-expanded={openn ? "true" : undefined}
                 onClick={handleClick}
+                sx={{ color: "white" }}
               >
                 {name.displayName}
               </Button>
@@ -199,6 +217,11 @@ const HomePageAdmin = () => {
                 <MenuItem onClick={handleClose}>My account</MenuItem>
                 <MenuItem onClick={handleLogout}>Logout</MenuItem>
               </Menu>
+              <img
+                src={imgUser}
+                alt="user"
+                className="w-[48px] h-12 rounded-full border border-blue-500 mx-5"
+              />
             </div>
           </Toolbar>
         </AppBar>
@@ -239,13 +262,31 @@ const HomePageAdmin = () => {
               </ListItem>
             ))}
           </List>
+          {/* <Divider />
+          <img
+            src={imgUser}
+            alt="user"
+            className="w-[48px] h-12 rounded-full border border-blue-500 my-5 mx-auto"
+          />
+          <div className="my-0 mx-auto">
+            <Button
+              id="basic-button"
+              aria-controls={openn ? "basic-menu" : undefined}
+              aria-haspopup="true"
+              aria-expanded={openn ? "true" : undefined}
+              sx={{ color: "black" }}
+            >
+              {name.displayName}
+            </Button>
+          </div>
+          <LogoutIcon sx={{ my: 0, mx: "auto", fontSize: "28px" }} /> */}
         </Drawer>
         <Box component="main" sx={{ mt: 10, ml: 8, mr: 10, flex: 1 }}>
           <ComponentToRender />
         </Box>
       </Box>
-    </div>
+    </ThemeProvider>
   );
-}
+};
 
-export default HomePageAdmin
+export default HomePageAdmin;
