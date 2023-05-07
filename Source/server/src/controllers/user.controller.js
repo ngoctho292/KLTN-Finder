@@ -183,7 +183,7 @@ const updateUserByUser = async (req, res) => {
 const getUserByUsername = async (req, res) => {
     try {
         const { username } = req.query
-        const checkUserName = await userModel.findOne({ username }).select('username id displayName')
+        const checkUserName = await userModel.findOne({ username }).select('username id displayName roles createdAt')
         if (!checkUserName) return responseHandler.notfound(res, 'Không tìm thấy username')
         responseHandler.ok(res, checkUserName)
     } catch {
