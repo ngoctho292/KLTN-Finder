@@ -124,8 +124,8 @@ const updatePassword = async (req, res) => {
 
 // Lấy danh sách thông tin user
 const getInfo = async (req, res) => {
-    try {
-        const user = await userModel.find()
+  try {
+    const user = await userModel.find({roles: "user"});
 
         if (!user) return responseHandler.notfound(res)
 
@@ -229,19 +229,6 @@ const updateUserByAdmin = async (req, res) => {
     }
 }
 
-// const deleteUserById = async (req, res) => {
-//     try {
-//         const { userId } = req.params
-//         const checkUserId = await userModel.findByIdAndDelete(userId)
-//         if (!checkUserId) return responseHandler.notfound(res, `Không tìm thấy user có ID: ${userId}`);
-//         responseHandler.ok(res, {
-//             statusCode: 200,
-//             message: "Xoá user thành công",
-//         });
-//     } catch {
-//         responseHandler.error(res, "Xoá user thất bại")
-//     }
-// }
 const deleteUserById = async (req, res) => {
     try {
         const userId = req.params.userId.split(',')
