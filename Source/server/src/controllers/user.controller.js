@@ -194,6 +194,21 @@ const getUserByUsername = async (req, res) => {
     }
 }
 
+const findUserByDisplayName = async (req, res) => {
+    try {
+        const { displayName } = req.body
+        const checkName = await userModel.find({ displayName: { $regex: displayName } }).select("displayName")
+        if (checkName.length > 0) {
+            responseHandler.ok(res, checkName)
+        } else {
+            responseHandler.ok(res, displayName)
+        }
+    } catch (error) {
+        responseHandler.error(res, 'Tìm user theo tên hiển thị không thành công!')
+    }
+}
+
+
 const updateUserByAdmin = async (req, res) => {
     try {
         const { userId } = req.params
@@ -262,4 +277,5 @@ export default {
     deleteUserById,
     updateUserByUser,
     updateUserByAdmin,
+    findUserByDisplayName,
 }
