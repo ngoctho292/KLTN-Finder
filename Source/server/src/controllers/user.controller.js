@@ -63,7 +63,7 @@ const signin = async (req, res) => {
         const { username, password } = req.body
 
         // Chỉ định các trường cần được trả về, bao gồm cả trường roles
-        const user = await userModel.findOne({ username }).select('username password salt id displayName roles')
+        const user = await userModel.findOne({ username }).select('username password salt id displayName roles createdAt updatedAt')
         if (!user) return responseHandler.badrequest(res, 'User không tồn tại!')
 
         if (!user.validPassword(password)) return responseHandler.badrequest(res, 'Sai mật khẩu, vui lòng thử lại!')
@@ -75,6 +75,8 @@ const signin = async (req, res) => {
                 id: user.id,
                 displayName: user.displayName,
                 username: user.username,
+                createdAt: user.createdAt,
+                updatedAt: user.updatedAt,
             },
         }
         const token = jsonwebtoken.sign(payload, process.env.TOKEN_SECRET, {
@@ -125,8 +127,8 @@ const updatePassword = async (req, res) => {
 
 // Lấy danh sách thông tin user
 const getInfo = async (req, res) => {
-    try {
-        const user = await userModel.find()
+  try {
+    const user = await userModel.find({roles: "user"});
 
         if (!user) return responseHandler.notfound(res)
 
@@ -230,19 +232,6 @@ const updateUserByAdmin = async (req, res) => {
     }
 }
 
-// const deleteUserById = async (req, res) => {
-//     try {
-//         const { userId } = req.params
-//         const checkUserId = await userModel.findByIdAndDelete(userId)
-//         if (!checkUserId) return responseHandler.notfound(res, `Không tìm thấy user có ID: ${userId}`);
-//         responseHandler.ok(res, {
-//             statusCode: 200,
-//             message: "Xoá user thành công",
-//         });
-//     } catch {
-//         responseHandler.error(res, "Xoá user thất bại")
-//     }
-// }
 const deleteUserById = async (req, res) => {
     try {
         const userId = req.params.userId.split(',')

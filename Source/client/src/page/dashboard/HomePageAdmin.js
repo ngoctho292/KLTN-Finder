@@ -1,4 +1,7 @@
-import React from 'react'
+import React from "react";
+import { useTranslation } from "react-i18next";
+import i18n from "../../translation/i18n";
+
 import { styled, useTheme } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import MuiDrawer from "@mui/material/Drawer";
@@ -13,11 +16,12 @@ import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import Brightness7 from "@mui/icons-material/Brightness7";
+import Brightness4 from "@mui/icons-material/Brightness4";
 import LiveTvIcon from "@mui/icons-material/LiveTv";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import CommentIcon from "@mui/icons-material/Comment";
-import DraftsIcon from "@mui/icons-material/Drafts";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import Button from "@mui/material/Button";
@@ -25,22 +29,39 @@ import Menu from "@mui/material/Menu";
 import ManageComment from "../../components/admin/ManageComment";
 import ManageUser from "../../components/admin/ManageUser";
 import ManageMovie from "../../components/admin/ManageMovie";
-import {
-  MenuItem
-} from "@mui/material";
+import { MenuItem } from "@mui/material";
+import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import imgUser from "../../asset/image/user.png";
+import { Modal } from "@mui/material";
+import PropTypes from "prop-types";
+import Tabs from "@mui/material/Tabs";
+import Tab from "@mui/material/Tab";
+import axios from "axios";
 
+
+const style = {
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  width: 800,
+  height: 600,
+  boxShadow: 24,
+};
 const iconList = [
   <AccountCircleIcon />,
   <LiveTvIcon />,
   <CommentIcon />,
   // Thêm các icon khác vào đây
 ];
+
 const componentMap = {
   Account: ManageUser,
   Movie: ManageMovie,
   Comment: ManageComment,
+  Profile: ManageComment,
 };
 const drawerWidth = 240;
 
@@ -109,9 +130,50 @@ const Drawer = styled(MuiDrawer, {
   }),
 }));
 
+function TabPanel(props) {
+  const { children, value, index, ...other } = props;
+
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`simple-tabpanel-${index}`}
+      aria-labelledby={`simple-tab-${index}`}
+      {...other}
+    >
+      {value === index && (
+        <Box sx={{ p: 3 }}>
+          <Typography>{children}</Typography>
+        </Box>
+      )}
+    </div>
+  );
+}
+
+TabPanel.propTypes = {
+  children: PropTypes.node,
+  index: PropTypes.number.isRequired,
+  value: PropTypes.number.isRequired,
+};
+
+function a11yProps(index) {
+  return {
+    id: `simple-tab-${index}`,
+    "aria-controls": `simple-tabpanel-${index}`,
+  };
+}
 const HomePageAdmin = () => {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
+  const [light, setLight] = React.useState(true);
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const [selectedItem, setSelectedItem] = React.useState("Account");
+  
+  const darkTheme = createTheme({
+    palette: {
+      mode: light ? "light" : "dark",
+    },
+  });
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -121,30 +183,42 @@ const HomePageAdmin = () => {
     setOpen(false);
   };
 
-    // const [openn, setOpenn] = useState(false);
-    const [selectedItem, setSelectedItem] = React.useState("Account");
+  const handleItemClick = (item) => {
+    setSelectedItem(item);
+  };
 
-    const handleItemClick = (item) => {
-      setSelectedItem(item);
-    };
-    const ComponentToRender = componentMap[selectedItem];
+  const ComponentToRender = componentMap[selectedItem];
 
-    const [anchorEl, setAnchorEl] = React.useState(null);
-    const openn = Boolean(anchorEl);
-    const handleClick = (event) => {
-      setAnchorEl(event.currentTarget);
-    };
-    const handleClose = () => {
-      setAnchorEl(null);
-    };
-    const name = JSON.parse(localStorage.getItem("infor"));
-    const handleLogout = () => {
-      localStorage.removeItem("infor")
-      localStorage.removeItem("role");
-      window.location.href = "/";
-    }
+  const openn = Boolean(anchorEl);
+
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const name = JSON.parse(localStorage.getItem("infor"));
+
+  const handleLogout = () => {
+    localStorage.removeItem("infor");
+    localStorage.removeItem("role");
+    window.location.href = "/";
+  };
+  const [openProfile, setOpenProfile] = React.useState(false);
+  const handleOpenProfile = () => {
+    setOpenProfile(true);
+  };
+  const handleCloseProfile = () => {
+    setOpenProfile(false);
+  };
+  const { t } = useTranslation();
+  function changeLanguage(e) {
+    i18n.changeLanguage(e.target.value);
+  }
   return (
-    <div>
+    <ThemeProvider theme={darkTheme}>
       <ToastContainer
         position="bottom-left"
         autoClose={3000}
@@ -159,7 +233,7 @@ const HomePageAdmin = () => {
       />
       <Box sx={{ display: "flex" }}>
         <CssBaseline />
-        <AppBar position="fixed" open={open} sx={{ background: "#1A1D29" }}>
+        <AppBar position="fixed" open={open} sx={{ background: "#3778DA" }}>
           <Toolbar>
             <IconButton
               color="inherit"
@@ -174,15 +248,26 @@ const HomePageAdmin = () => {
               <MenuIcon />
             </IconButton>
             <Typography variant="h6" noWrap component="div">
-              Dashboard
+              {/* Dashboard */}
+              {t("Title_header")}
             </Typography>
-            <div style={{ marginLeft: "auto" }}>
+            <div style={{ marginLeft: "auto", display: "flex" }}>
+              <div className="flex items-center">
+                <select onChange={changeLanguage} className="color-black">
+                  <option value="vi">vi</option>
+                  <option value="en">en</option>
+                </select>
+              </div>
+              <IconButton onClick={() => setLight(!light)}>
+                {light ? <Brightness7 /> : <Brightness4 />}
+              </IconButton>
               <Button
                 id="basic-button"
                 aria-controls={openn ? "basic-menu" : undefined}
                 aria-haspopup="true"
                 aria-expanded={openn ? "true" : undefined}
                 onClick={handleClick}
+                sx={{ color: "white" }}
               >
                 {name.displayName}
               </Button>
@@ -195,10 +280,24 @@ const HomePageAdmin = () => {
                   "aria-labelledby": "basic-button",
                 }}
               >
-                <MenuItem onClick={handleClose}>Profile</MenuItem>
-                <MenuItem onClick={handleClose}>My account</MenuItem>
+                <MenuItem onClick={handleOpenProfile}>Account Setting</MenuItem>
                 <MenuItem onClick={handleLogout}>Logout</MenuItem>
               </Menu>
+              <img
+                src={imgUser}
+                alt="user"
+                className="w-[48px] h-12 rounded-full border border-blue-500 mx-5"
+              />
+              <Modal
+                open={openProfile}
+                onClose={handleCloseProfile}
+                aria-labelledby="parent-modal-title"
+                aria-describedby="parent-modal-description"
+              >
+                <Box sx={style}>
+                  <ModalProfile onClose={handleCloseProfile} />
+                </Box>
+              </Modal>
             </div>
           </Toolbar>
         </AppBar>
@@ -244,8 +343,193 @@ const HomePageAdmin = () => {
           <ComponentToRender />
         </Box>
       </Box>
+    </ThemeProvider>
+  );
+};
+
+export default HomePageAdmin;
+
+export const ModalProfile = () => {
+  const [value, setValue] = React.useState(0);
+
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
+  };
+  function formatDate(dateString) {
+    const date = new Date(dateString);
+    const day = `${date.getDate().toString().padStart(2, "0")}`;
+    const month = `${(date.getMonth() + 1).toString().padStart(2, "0")}`;
+    const year = `${date.getFullYear()}`;
+    return `${day}-${month}-${year}`;
+  }
+  const inforRole = JSON.parse(localStorage.getItem("role"));
+  const infor = JSON.parse(localStorage.getItem("infor"));
+
+  const formattedDateCreated = formatDate(infor.createdAt);
+  const formattedDateUpdated = formatDate(infor.updatedAt);
+
+  const [displayName, setDisplayName] = React.useState()
+  const onChangeName = (event) => {
+    const value = event.target.value;
+    setDisplayName(value);
+  };
+  const onChangeDisplayName = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const config = {
+        headers: {
+          Authorization: `Bear ${token}`,
+        },
+      };
+      const request = await axios.put(
+        "http://localhost:5000/api/v1/user/update-profile", {displayName}, config
+      );
+      console.log(request)
+      toast.success(request.data.message)
+
+      window.location.reload();
+    } catch (error) {
+      if (error.response) {
+        toast.error(error.response.data.message);
+      } else {
+        console.log(error);
+      }
+    }
+  }
+
+  const [password, setPassword] = React.useState()
+  const [newPassword, setNewPassword] = React.useState()
+  const [confirmNewPassword, setConfirmNewPassword] = React.useState()
+
+  const onChangePass = (event) => {
+    const value = event.target.value;
+    setPassword(value);
+  };
+  const onChangeNewPass = (event) => {
+    const value = event.target.value;
+    setNewPassword(value);
+  };
+  const onChangeConfirmPass = (event) => {
+    const value = event.target.value;
+    setConfirmNewPassword(value);
+  };
+  const onChangePassword = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const config = {
+        headers: {
+          Authorization: `Bear ${token}`,
+        },
+      };
+      const request = await axios.put(
+        "http://localhost:5000/api/v1/user/update-password",
+        {
+          password,
+          newPassword,
+          confirmNewPassword,
+        },
+        config
+      );
+      toast.success(request.data.message)
+    } catch (error) {
+      if(error.response){
+        toast.error(error.response.data.message)
+      }else{
+        console.log(error)
+      }
+    }
+  }
+  return (
+    <div className="bg-[#1E1E1E] h-full flex items-center flex-col text-white">
+      <div className="flex flex-col text-white mt-8">
+        <h3 className="text-xl font-semibold mb-4 text-center">
+          Account Setting
+        </h3>
+        <Box sx={{ width: "100%" }}>
+          <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+            <Tabs
+              value={value}
+              onChange={handleChange}
+              textColor="white"
+              aria-label="basic tabs example"
+            >
+              <Tab label="Account Information" {...a11yProps(0)} />
+              <Tab label="Change DisplayName" {...a11yProps(1)} />
+              <Tab label="Change Password" {...a11yProps(2)} />
+            </Tabs>
+          </Box>
+          <TabPanel value={value} index={0}>
+            <div className="grid grid-cols-2 gap-4">
+              <label>
+                <strong>ID:</strong> {infor.id}
+              </label>
+              <label>
+                <strong>DISPLAY NAME:</strong> {infor.displayName}
+              </label>
+              <label>
+                <strong>USERNAME:</strong> {infor.username}
+              </label>
+              <label>
+                <strong>ROLE:</strong> {inforRole}
+              </label>
+              <label>
+                <strong>CREATED-AT:</strong> {formattedDateCreated}
+              </label>
+              <label>
+                <strong>UPDATED-AT:</strong> {formattedDateUpdated}
+              </label>
+            </div>
+          </TabPanel>
+          <TabPanel value={value} index={1}>
+            <div>
+              <label>DISPLAYNAME: </label>
+              <input
+                type="text"
+                className="w-[200px] h-12 mt-3 rounded-md p-3 bg-[#31343E] text-[#C8C9CB] "
+                placeholder="Enter displayname"
+                onChange={onChangeName}
+              />
+            </div>
+            <button
+              className="bg-[#037AEB] h-12 w-[100px] mt-5 rounded-md p-3 font-semibold "
+              onClick={onChangeDisplayName}
+            >
+              CHANGE
+            </button>
+          </TabPanel>
+          <TabPanel value={value} index={2}>
+            <div className="bg-[#1E1E1E] h-full flex items-center justify-center flex-col text-white">
+              <div className="flex flex-col text-white">
+                <input
+                  type="password"
+                  className="w-[374px] h-12 mt-3 rounded-md p-3 bg-[#31343E] text-[#C8C9CB]"
+                  placeholder="Enter password"
+                  onChange={onChangePass}
+                />
+
+                <input
+                  type="password"
+                  className="w-[374px] h-12 mt-3 rounded-md p-3 bg-[#31343E] text-[#C8C9CB] "
+                  placeholder="Enter new password"
+                  onChange={onChangeNewPass}
+                />
+                <input
+                  type="password"
+                  className="w-[374px] h-12 mt-3 rounded-md p-3 bg-[#31343E] text-[#C8C9CB]"
+                  placeholder="Enter confirm new password"
+                  onChange={onChangeConfirmPass}
+                />
+                <button
+                  className="bg-[#037AEB] h-12 w-[100px] mt-5 rounded-md p-3 font-semibold mr-auto"
+                  onClick={onChangePassword}
+                >
+                  CHANGE
+                </button>
+              </div>
+            </div>
+          </TabPanel>
+        </Box>
+      </div>
     </div>
   );
-}
-
-export default HomePageAdmin
+};

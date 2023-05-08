@@ -1,10 +1,14 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+
 import { DataGrid } from "@mui/x-data-grid";
 import InputBase from "@mui/material/InputBase";
 import SearchIcon from "@mui/icons-material/Search";
 import axios from "axios";
-import { Box, Modal, Button } from "@mui/material";
-
+import { Box, Modal } from "@mui/material";
+import LinearProgress from "@mui/material/LinearProgress";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 const style = {
   position: "absolute",
   top: "50%",
@@ -14,26 +18,43 @@ const style = {
   height: 600,
   boxShadow: 24,
 };
+
 const ManageUser = () => {
   const [users, setUsers] = useState([]);
-  const [keytable, setKeytable] = useState(0);
+  const [mainusers, setMainUsers] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const timeLoading = () => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1000);
+    return () => clearTimeout(timer);
+  }
+  useEffect(() => {
+    timeLoading();
+  },[])
   useEffect(() => {
     const getUser = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        const config = {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        };
-        const response = await axios.get("http://localhost:5000/api/v1/user/info", config);
-        setUsers(response.data);
-      } catch (error) {
-        console.error(error);
+      if (!isLoading) {
+        try {
+          const token = localStorage.getItem("token");
+          const config = {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          };
+          const response = await axios.get(
+            "http://localhost:5000/api/v1/user/info",
+            config
+          );
+          setUsers(response.data);
+          setMainUsers(response.data);
+        } catch (error) {
+          console.error(error);
+        }
       }
     };
     getUser();
-  },[])
+  }, [isLoading]);
   const columns = useMemo(() => [
     { field: "displayName", headerName: "Display Name", width: 200 },
     { field: "username", headerName: "Username", width: 200 },
@@ -42,7 +63,20 @@ const ManageUser = () => {
       field: "createdAt",
       headerName: "Created At",
       width: 250,
-      
+      valueFormatter: (params) => {
+        // Tạo đối tượng Date từ chuỗi thời gian
+        const date = new Date(params.value);
+
+        // Lấy giá trị ngày, tháng, năm
+        const day = date.getDate().toString().padStart(2, "0"); // padStart(2, "0") để hiển thị luôn 2 chữ số
+        const month = (date.getMonth() + 1).toString().padStart(2, "0"); // Lưu ý là getMonth() trả về giá trị từ 0 - 11 nên cần + 1
+        const year = date.getFullYear();
+
+        // Kết hợp ngày, tháng và năm thành định dạng dd/mm/yyyy
+        const formattedDateString = `${day}-${month}-${year}`;
+
+        return formattedDateString;
+      },
     },
     { field: "id", headerName: "Id", width: 220 },
   ]);
@@ -53,13 +87,102 @@ const ManageUser = () => {
   const handleClose = () => {
     setOpen(false);
   };
+  const [openUpdate, setOpenUpdate] = React.useState(false);
+  const handleOpenUpdate = () => {
+    setOpenUpdate(true);
+  };
+  const handleCloseUpdate = () => {
+    setOpenUpdate(false);
+  };
+  const [userIds, setUserIds] = useState([]);
   const onSelectHandle = (ids) => {
-    const selectRowData = ids.map(id => users.find(row => row.id === id))
-    console.log(selectRowData)
-  }
+    const selectRowData = ids.map((id) => users.find((row) => row.id === id));
+    setUserIds(selectRowData);
+    console.log(selectRowData);
+  };
+  const onDeleteUser = async (userIds) => {
+    try {
+      setIsLoading(true);
+      const token = localStorage.getItem("token");
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+      const requests = userIds.map((userId) =>
+        axios.delete(`http://localhost:5000/api/v1/user/${userId.id}`, config)
+      );
+
+      const responses = await Promise.all(requests);
+
+      const successCount = responses.reduce((count, response) => {
+        if (response.status === 200) return count + 1;
+        return count;
+      }, 0);
+
+      setIsLoading(false);
+      return {
+        successCount: successCount,
+      };
+    } catch (error) {
+      setIsLoading(false);
+    }
+  };
+  const handleDeleteClick = async () => {
+    try {
+      await onDeleteUser(userIds);
+      toast.success("Deleted user successfully!");
+    } catch (error) {
+      toast.error("Deleted user failed!");
+    }
+  };
+  const [username, setUsername] = useState();
+
+  const onSearchUser = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+      const params = {
+        username: username,
+      };
+      const request = await axios.get("http://localhost:5000/api/v1/user", {
+        params: params,
+        ...config,
+      });
+      if (request) {
+        setUsers([request.data]);
+      }
+    } catch (error) {
+      console.log(error);
+      setUsers(mainusers);
+    }
+  };
+  const onChangeUsername = (event) => {
+    const value = event.target.value;
+    setUsername(value);
+  };
+  const [value, setValue] = useState("");
+  const { t } = useTranslation();
+
   return (
     <div className="w-full">
-      <h2 className="text-2xl w-full">Manage account</h2>
+      <ToastContainer
+        position="bottom-left"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+      />
+      <h2 className="text-2xl w-full">{t("ManageAccount")}</h2>
       <div className="mb-4 flex justify-between w-full">
         <div>
           <InputBase
@@ -72,9 +195,13 @@ const ManageUser = () => {
               pl: 1,
               pr: 1,
             }}
-            placeholder="Search user ..."
+            placeholder="Search username ..."
+            onChange={onChangeUsername}
           />
-          <button className="bg-[#3778DA] h-10 w-[120px] mt-5 ml-5 rounded-md text-white">
+          <button
+            className="bg-[#3778DA] h-10 w-[120px] mt-5 ml-5 rounded-md text-white"
+            onClick={onSearchUser}
+          >
             <SearchIcon />
             Search
           </button>
@@ -86,10 +213,16 @@ const ManageUser = () => {
           >
             Add user
           </button>
-          <button className="bg-[#24AB62] h-10 w-[120px] mt-5 mr-5 rounded-md text-white">
+          <button
+            className="bg-[#24AB62] h-10 w-[120px] mt-5 mr-5 rounded-md text-white"
+            onClick={handleOpenUpdate}
+          >
             Update user
           </button>
-          <button className="bg-[#E14444] h-10 w-[120px] mt-5 rounded-md text-white">
+          <button
+            className="bg-[#E14444] h-10 w-[120px] mt-5 rounded-md text-white"
+            onClick={handleDeleteClick}
+          >
             Delete user
           </button>
           <Modal
@@ -99,14 +232,27 @@ const ManageUser = () => {
             aria-describedby="parent-modal-description"
           >
             <Box sx={style}>
-              <ModalAddUser setKeytable={setKeytable} onClose={handleClose} />
+              <ModalAddUser setIsLoading={setIsLoading} onClose={handleClose} />
+            </Box>
+          </Modal>
+          <Modal
+            open={openUpdate}
+            onClose={handleCloseUpdate}
+            aria-labelledby="parent-modal-title"
+            aria-describedby="parent-modal-description"
+          >
+            <Box sx={style}>
+              <ModalUpdateUser
+                setIsLoading={setIsLoading}
+                onClose={handleCloseUpdate}
+                userIds={userIds}
+              />
             </Box>
           </Modal>
         </div>
       </div>
       <div className="w-full">
         <DataGrid
-          key={keytable}
           columns={columns}
           rows={users}
           initialState={{
@@ -114,9 +260,13 @@ const ManageUser = () => {
               paginationModel: { page: 0, pageSize: 5 },
             },
           }}
+          slots={{
+            loadingOverlay: LinearProgress,
+          }}
+          loading={isLoading}
           pageSizeOptions={[5, 10]}
           checkboxSelection
-          onRowSelectionModelChange={ids => onSelectHandle(ids)}
+          onRowSelectionModelChange={(ids) => onSelectHandle(ids)}
         />
       </div>
     </div>
@@ -125,10 +275,7 @@ const ManageUser = () => {
 
 export default ManageUser;
 
-
-export const ModalAddUser = ({ onClose }) => {
-  const [keytable, setKeytable] = useState(0);
-
+export const ModalAddUser = ({ onClose, setIsLoading }) => {
   const [username, setUsername] = useState();
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState();
@@ -136,21 +283,24 @@ export const ModalAddUser = ({ onClose }) => {
 
   const onAddUser = async () => {
     try {
+      setIsLoading(true);
       const res = await axios.post("http://localhost:5000/api/v1/user/signup", {
         username,
         password,
         confirmPassword,
         displayName,
       });
-      console.log(res);
-      if (res.status === 201) {
-        console.log(res.statusText);
-      }
+      toast.success("Added user successfully!");
+      setIsLoading(false);
     } catch (error) {
-      console.log(error);
+      setIsLoading(false);
+      if(error.response){
+        toast.error(error.response.data.message);
+      }else{
+        console.log(error);
+      }
     }
     onClose();
-    setKeytable(keytable + 1);
   };
   const onChangeUsername = (event) => {
     const value = event.target.value;
@@ -180,14 +330,14 @@ export const ModalAddUser = ({ onClose }) => {
         <input
           type="text"
           className="w-[374px] h-12 mt-3 rounded-md p-3 bg-[#31343E] text-[#C8C9CB]"
-          placeholder="Emai hoặc số điện thoại..."
+          placeholder="Enter username"
           onChange={onChangeUsername}
           onKeyPress={handleKeyPress}
         />
         <input
           type="text"
           className="w-[374px] h-12 mt-3 rounded-md p-3 bg-[#31343E] text-[#C8C9CB]"
-          placeholder="Nhập tên hiển thị"
+          placeholder="Enter displayname"
           onChange={onChangeDisplayName}
           onKeyPress={handleKeyPress}
         />
@@ -195,14 +345,14 @@ export const ModalAddUser = ({ onClose }) => {
         <input
           type="password"
           className="w-[374px] h-12 mt-3 rounded-md p-3 bg-[#31343E] text-[#C8C9CB] "
-          placeholder="Mật khẩu"
+          placeholder="Enter password"
           onChange={onChangePass}
           onKeyPress={handleKeyPress}
         />
         <input
           type="password"
           className="w-[374px] h-12 mt-3 rounded-md p-3 bg-[#31343E] text-[#C8C9CB]"
-          placeholder="Nhập lại mật khẩu"
+          placeholder="Enter confirm password"
           onChange={onChangeConfirmPass}
           onKeyPress={handleKeyPress}
         />
@@ -217,3 +367,107 @@ export const ModalAddUser = ({ onClose }) => {
   );
 };
 
+export const ModalUpdateUser = (props) => {
+  const { userIds, setIsLoading, onClose } = props;
+  const [displayName, setDisplayName] = useState();
+  const [password, setPassword] = useState("");
+  const [roles, setRoles] = useState();
+
+  const onUpdateUser = async () => {
+    try {
+      setIsLoading(true);
+      const token = localStorage.getItem("token");
+      const config = {
+        headers: {
+          Authorization: `Bear ${token}`,
+        },
+      };
+      const data = {
+        displayName: displayName,
+        password: password,
+        roles: roles,
+      };
+      const requests = userIds.map((userId) =>
+        axios.put(
+          `http://localhost:5000/api/v1/user/info/${userId.id}`,
+          data,
+          config
+        )
+      );
+      const responses = await Promise.all(requests);
+
+      const successCount = responses.reduce((count, response) => {
+        if (response.status === 200) return count + 1;
+        return count;
+      }, 0);
+      
+      setIsLoading(false);
+      return {
+        successCount: successCount,
+      };
+    } catch (error) {
+      setIsLoading(false);
+    }
+  };
+  const handleUpdateClick = async () => {
+    try {
+      const result = await onUpdateUser(userIds);
+      toast.success(`Successfully edited ${result.successCount} user!`);
+      onClose();
+    } catch (error) {
+      toast.error("User edit failed!");
+    }
+  };
+  const onChangeRole = (event) => {
+    const value = event.target.value;
+    setRoles(value);
+  };
+  const onChangePass = (event) => {
+    const value = event.target.value;
+    setPassword(value);
+  };
+  const onChangeDisplayName = (event) => {
+    const value = event.target.value;
+    setDisplayName(value);
+  };
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter") {
+      handleUpdateClick();
+    }
+  };
+  return (
+    <div className="bg-[#1E1E1E] h-full flex items-center justify-center flex-col text-white">
+      <div className="flex flex-col text-white mt-8">
+        <h3 className="text-xl font-semibold">Update user</h3>
+        <input
+          type="text"
+          className="w-[374px] h-12 mt-3 rounded-md p-3 bg-[#31343E] text-[#C8C9CB]"
+          placeholder="Enter displayname"
+          onChange={onChangeDisplayName}
+          onKeyPress={handleKeyPress}
+        />
+
+        <input
+          type="password"
+          className="w-[374px] h-12 mt-3 rounded-md p-3 bg-[#31343E] text-[#C8C9CB] "
+          placeholder="Enter password"
+          onChange={onChangePass}
+          onKeyPress={handleKeyPress}
+        />
+        <input
+          type="text"
+          className="w-[374px] h-12 mt-3 rounded-md p-3 bg-[#31343E] text-[#C8C9CB]"
+          placeholder="Enter role"
+          onChange={onChangeRole}
+          onKeyPress={handleKeyPress}
+        />
+        <button
+          className="bg-[#037AEB] h-12 w-[374px] mt-5 rounded-md p-3 font-semibold "
+          onClick={handleUpdateClick}
+        >
+          SUBMIT
+        </button>
+      </div>
+    </div>
+  );
+};
