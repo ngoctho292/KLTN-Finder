@@ -54,6 +54,7 @@ const signup = async (req, res) => {
         })
     } catch (error) {
         responseHandler.error(res, 'Đăng ký không thành công!')
+        console.log(error);
     }
 }
 
