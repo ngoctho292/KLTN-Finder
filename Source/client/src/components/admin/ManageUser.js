@@ -1,10 +1,14 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+
 import { DataGrid } from "@mui/x-data-grid";
 import InputBase from "@mui/material/InputBase";
 import SearchIcon from "@mui/icons-material/Search";
 import axios from "axios";
 import { Box, Modal } from "@mui/material";
-
+import LinearProgress from "@mui/material/LinearProgress";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 const style = {
   position: "absolute",
   top: "50%",
@@ -14,31 +18,43 @@ const style = {
   height: 600,
   boxShadow: 24,
 };
+
 const ManageUser = () => {
   const [users, setUsers] = useState([]);
   const [mainusers, setMainUsers] = useState([]);
-  const [keytable, setKeytable] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+  const timeLoading = () => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1000);
+    return () => clearTimeout(timer);
+  }
+  useEffect(() => {
+    timeLoading();
+  },[])
   useEffect(() => {
     const getUser = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        const config = {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        };
-        const response = await axios.get(
-          "http://localhost:5000/api/v1/user/info",
-          config
-        );
-        setUsers(response.data);
-        setMainUsers(response.data);
-      } catch (error) {
-        console.error(error);
+      if (!isLoading) {
+        try {
+          const token = localStorage.getItem("token");
+          const config = {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          };
+          const response = await axios.get(
+            "http://localhost:5000/api/v1/user/info",
+            config
+          );
+          setUsers(response.data);
+          setMainUsers(response.data);
+        } catch (error) {
+          console.error(error);
+        }
       }
     };
     getUser();
-  }, []);
+  }, [isLoading]);
   const columns = useMemo(() => [
     { field: "displayName", headerName: "Display Name", width: 200 },
     { field: "username", headerName: "Username", width: 200 },
@@ -47,6 +63,20 @@ const ManageUser = () => {
       field: "createdAt",
       headerName: "Created At",
       width: 250,
+      valueFormatter: (params) => {
+        // Tạo đối tượng Date từ chuỗi thời gian
+        const date = new Date(params.value);
+
+        // Lấy giá trị ngày, tháng, năm
+        const day = date.getDate().toString().padStart(2, "0"); // padStart(2, "0") để hiển thị luôn 2 chữ số
+        const month = (date.getMonth() + 1).toString().padStart(2, "0"); // Lưu ý là getMonth() trả về giá trị từ 0 - 11 nên cần + 1
+        const year = date.getFullYear();
+
+        // Kết hợp ngày, tháng và năm thành định dạng dd/mm/yyyy
+        const formattedDateString = `${day}-${month}-${year}`;
+
+        return formattedDateString;
+      },
     },
     { field: "id", headerName: "Id", width: 220 },
   ]);
@@ -72,6 +102,7 @@ const ManageUser = () => {
   };
   const onDeleteUser = async (userIds) => {
     try {
+      setIsLoading(true);
       const token = localStorage.getItem("token");
       const config = {
         headers: {
@@ -89,22 +120,20 @@ const ManageUser = () => {
         return count;
       }, 0);
 
+      setIsLoading(false);
       return {
         successCount: successCount,
-        message: `Xoá thành công ${successCount} user!`,
       };
     } catch (error) {
-      throw new Error("Xoá user không thành công!");
+      setIsLoading(false);
     }
-    // onClose();
-    // setKeytable(keytable + 1);
   };
   const handleDeleteClick = async () => {
     try {
-      const result = await onDeleteUser(userIds);
-      alert(result.message);
+      await onDeleteUser(userIds);
+      toast.success("Deleted user successfully!");
     } catch (error) {
-      alert(error.message);
+      toast.error("Deleted user failed!");
     }
   };
   const [username, setUsername] = useState();
@@ -137,10 +166,23 @@ const ManageUser = () => {
     setUsername(value);
   };
   const [value, setValue] = useState("");
+  const { t } = useTranslation();
 
   return (
     <div className="w-full">
-      <h2 className="text-2xl w-full">Manage account</h2>
+      <ToastContainer
+        position="bottom-left"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+      />
+      <h2 className="text-2xl w-full">{t("ManageAccount")}</h2>
       <div className="mb-4 flex justify-between w-full">
         <div>
           <InputBase
@@ -190,7 +232,7 @@ const ManageUser = () => {
             aria-describedby="parent-modal-description"
           >
             <Box sx={style}>
-              <ModalAddUser setKeytable={setKeytable} onClose={handleClose} />
+              <ModalAddUser setIsLoading={setIsLoading} onClose={handleClose} />
             </Box>
           </Modal>
           <Modal
@@ -201,7 +243,7 @@ const ManageUser = () => {
           >
             <Box sx={style}>
               <ModalUpdateUser
-                setKeytable={setKeytable}
+                setIsLoading={setIsLoading}
                 onClose={handleCloseUpdate}
                 userIds={userIds}
               />
@@ -211,7 +253,6 @@ const ManageUser = () => {
       </div>
       <div className="w-full">
         <DataGrid
-          key={keytable}
           columns={columns}
           rows={users}
           initialState={{
@@ -219,6 +260,10 @@ const ManageUser = () => {
               paginationModel: { page: 0, pageSize: 5 },
             },
           }}
+          slots={{
+            loadingOverlay: LinearProgress,
+          }}
+          loading={isLoading}
           pageSizeOptions={[5, 10]}
           checkboxSelection
           onRowSelectionModelChange={(ids) => onSelectHandle(ids)}
@@ -230,9 +275,7 @@ const ManageUser = () => {
 
 export default ManageUser;
 
-export const ModalAddUser = ({ onClose }) => {
-  const [keytable, setKeytable] = useState(0);
-
+export const ModalAddUser = ({ onClose, setIsLoading }) => {
   const [username, setUsername] = useState();
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState();
@@ -240,21 +283,24 @@ export const ModalAddUser = ({ onClose }) => {
 
   const onAddUser = async () => {
     try {
+      setIsLoading(true);
       const res = await axios.post("http://localhost:5000/api/v1/user/signup", {
         username,
         password,
         confirmPassword,
         displayName,
       });
-      console.log(res);
-      if (res.status === 201) {
-        console.log(res.statusText);
-      }
+      toast.success("Added user successfully!");
+      setIsLoading(false);
     } catch (error) {
-      console.log(error);
+      setIsLoading(false);
+      if(error.response){
+        toast.error(error.response.data.message);
+      }else{
+        console.log(error);
+      }
     }
     onClose();
-    setKeytable(keytable + 1);
   };
   const onChangeUsername = (event) => {
     const value = event.target.value;
@@ -322,14 +368,14 @@ export const ModalAddUser = ({ onClose }) => {
 };
 
 export const ModalUpdateUser = (props) => {
-  const [keytable, setKeytable] = useState(0);
-  const { userIds } = props;
+  const { userIds, setIsLoading, onClose } = props;
   const [displayName, setDisplayName] = useState();
   const [password, setPassword] = useState("");
   const [roles, setRoles] = useState();
 
   const onUpdateUser = async () => {
     try {
+      setIsLoading(true);
       const token = localStorage.getItem("token");
       const config = {
         headers: {
@@ -354,21 +400,22 @@ export const ModalUpdateUser = (props) => {
         if (response.status === 200) return count + 1;
         return count;
       }, 0);
-
+      
+      setIsLoading(false);
       return {
         successCount: successCount,
-        message: `Chỉnh sửa thành công ${successCount} user!`,
       };
     } catch (error) {
-      throw new Error("Chỉnh sửa user không thành công!");
+      setIsLoading(false);
     }
   };
   const handleUpdateClick = async () => {
     try {
       const result = await onUpdateUser(userIds);
-      alert(result.message);
+      toast.success(`Successfully edited ${result.successCount} user!`);
+      onClose();
     } catch (error) {
-      alert(error.message);
+      toast.error("User edit failed!");
     }
   };
   const onChangeRole = (event) => {
