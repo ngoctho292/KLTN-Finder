@@ -2,6 +2,11 @@ pipeline {
     agent any
 
     stages {
+        stage('Checkout') {
+            steps {
+              git credentialsId: "${env.GITHUB_CREDS}", url: "${env.GITHUB_REPO}"
+            }
+        }
         stage('Build') {
             steps {
                 dir('Source/client') {
@@ -13,15 +18,10 @@ pipeline {
                 }
             }
         }
-        // stage('Test') {
-        //     steps {
-        //         sh 'npm test'
-        //     }
-        // }
-        // stage('Deploy') {
-        //     steps {
-        //         sh 'npm run deploy'
-        //     }
-        // }
+    }
+    post {
+        always {
+            load '.env'
+        }
     }
 }
