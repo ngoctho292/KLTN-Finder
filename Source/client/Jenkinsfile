@@ -2,11 +2,11 @@ pipeline {
     agent any
 
     stages {
-        stage('Checkout') {
-            steps {
-              git credentialsId: "${env.GITHUB_CREDS}", url: "${env.GITHUB_REPO}"
-            }
-        }
+        // stage('Checkout') {
+        //     steps {
+        //       git credentialsId: "${env.GITHUB_CREDS}", url: "${env.GITHUB_REPO}"
+        //     }
+        // }
         stage('Build') {
             steps {
                 dir('Source/client') {
