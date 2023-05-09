@@ -5,6 +5,7 @@ import { DataGrid } from "@mui/x-data-grid";
 import InputBase from "@mui/material/InputBase";
 import SearchIcon from "@mui/icons-material/Search";
 import axios from "axios";
+import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import { Box, Modal } from "@mui/material";
 import LinearProgress from "@mui/material/LinearProgress";
 import { ToastContainer, toast } from "react-toastify";
@@ -16,6 +17,15 @@ const style = {
   transform: "translate(-50%, -50%)",
   width: 500,
   height: 600,
+  boxShadow: 24,
+};
+const styleModalDelete = {
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  width: 500,
+  height: 350,
   boxShadow: 24,
 };
 
@@ -79,7 +89,7 @@ const ManageUser = () => {
       },
     },
     { field: "id", headerName: "Id", width: 220 },
-  ]);
+  ],[]);
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => {
     setOpen(true);
@@ -94,12 +104,172 @@ const ManageUser = () => {
   const handleCloseUpdate = () => {
     setOpenUpdate(false);
   };
+  const [openDelete, setOpenDelete] = React.useState(false);
+  const handleOpenDelete = () => {
+    setOpenDelete(true);
+  };
+  const handleCloseDelete = () => {
+    setOpenDelete(false);
+  };
   const [userIds, setUserIds] = useState([]);
   const onSelectHandle = (ids) => {
     const selectRowData = ids.map((id) => users.find((row) => row.id === id));
     setUserIds(selectRowData);
     console.log(selectRowData);
   };
+  
+  
+  const [displayName, setDisplayName] = useState();
+
+  const onSearchUser = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+      const request = await axios.post("http://localhost:5000/api/v1/user/", {
+        displayName,
+      }, config);
+      if (request) {
+        setUsers(request.data);
+      }
+    } catch (error) {
+      console.log(error);
+      setUsers(mainusers);
+    }
+  };
+  const onChangeDisplayName = (event) => {
+    const value = event.target.value;
+    setDisplayName(value);
+  };
+  const { t } = useTranslation();
+
+  return (
+    <div className="w-full">
+      <ToastContainer
+        position="bottom-left"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+      />
+      <h2 className="text-2xl w-full">{t("ManageAccount")}</h2>
+      <div className="mb-4 flex justify-between w-full">
+        <div>
+          <button
+            className="bg-[#3778DA] h-10 w-[120px] mt-5 mr-5 rounded-md text-white"
+            onClick={handleOpen}
+          >
+            Add user
+          </button>
+          <button
+            className="bg-[#24AB62] h-10 w-[120px] mt-5 mr-5 rounded-md text-white"
+            onClick={handleOpenUpdate}
+          >
+            Update user
+          </button>
+          <button
+            className="bg-[#E14444] h-10 w-[120px] mt-5 rounded-md text-white"
+            // onClick={handleDeleteClick}
+            onClick={handleOpenDelete}
+          >
+            Delete user
+          </button>
+          <Modal
+            open={open}
+            onClose={handleClose}
+            aria-labelledby="parent-modal-title"
+            aria-describedby="parent-modal-description"
+          >
+            <Box sx={style}>
+              <ModalAddUser setIsLoading={setIsLoading} onClose={handleClose} />
+            </Box>
+          </Modal>
+          <Modal
+            open={openUpdate}
+            onClose={handleCloseUpdate}
+            aria-labelledby="parent-modal-title"
+            aria-describedby="parent-modal-description"
+          >
+            <Box sx={style}>
+              <ModalUpdateUser
+                setIsLoading={setIsLoading}
+                onClose={handleCloseUpdate}
+                userIds={userIds}
+              />
+            </Box>
+          </Modal>
+          <Modal
+            open={openDelete}
+            onClose={handleCloseDelete}
+            aria-labelledby="parent-modal-title"
+            aria-describedby="parent-modal-description"
+          >
+            <Box sx={styleModalDelete}>
+              <ModalDeleteUser
+                setIsLoading={setIsLoading}
+                onClose={handleCloseDelete}
+                userIds={userIds}
+              />
+            </Box>
+          </Modal>
+        </div>
+        <div>
+          <InputBase
+            sx={{
+              mt: "20px",
+              height: 40,
+              border: 1,
+              borderColor: "#D9D9D9",
+              borderRadius: "5px",
+              pl: 1,
+              pr: 1,
+            }}
+            placeholder="Search username ..."
+            onChange={onChangeDisplayName}
+          />
+          <button
+            className="bg-[#3778DA] h-10 w-[120px] mt-5 ml-5 rounded-md text-white"
+            onClick={onSearchUser}
+          >
+            <SearchIcon />
+            Search
+          </button>
+        </div>
+      </div>
+      <div className="w-full">
+        <DataGrid
+          columns={columns}
+          rows={users}
+          initialState={{
+            pagination: {
+              paginationModel: { page: 0, pageSize: 5 },
+            },
+          }}
+          slots={{
+            loadingOverlay: LinearProgress,
+          }}
+          loading={isLoading}
+          pageSizeOptions={[5, 10]}
+          checkboxSelection
+          onRowSelectionModelChange={(ids) => onSelectHandle(ids)}
+        />
+      </div>
+    </div>
+  );
+};
+
+export default ManageUser;
+
+export const ModalDeleteUser = (props) => {
+  const { userIds, setIsLoading, onClose } = props;
   const onDeleteUser = async (userIds) => {
     try {
       setIsLoading(true);
@@ -132,148 +302,35 @@ const ManageUser = () => {
     try {
       await onDeleteUser(userIds);
       toast.success("Deleted user successfully!");
+      onClose();
     } catch (error) {
       toast.error("Deleted user failed!");
+      onClose();
     }
   };
-  const [username, setUsername] = useState();
-
-  const onSearchUser = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      const config = {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      };
-      const params = {
-        username: username,
-      };
-      const request = await axios.get("http://localhost:5000/api/v1/user", {
-        params: params,
-        ...config,
-      });
-      if (request) {
-        setUsers([request.data]);
-      }
-    } catch (error) {
-      console.log(error);
-      setUsers(mainusers);
-    }
-  };
-  const onChangeUsername = (event) => {
-    const value = event.target.value;
-    setUsername(value);
-  };
-  const [value, setValue] = useState("");
-  const { t } = useTranslation();
-
   return (
-    <div className="w-full">
-      <ToastContainer
-        position="bottom-left"
-        autoClose={3000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="dark"
-      />
-      <h2 className="text-2xl w-full">{t("ManageAccount")}</h2>
-      <div className="mb-4 flex justify-between w-full">
-        <div>
-          <InputBase
-            sx={{
-              mt: "20px",
-              height: 40,
-              border: 1,
-              borderColor: "#D9D9D9",
-              borderRadius: "5px",
-              pl: 1,
-              pr: 1,
-            }}
-            placeholder="Search username ..."
-            onChange={onChangeUsername}
-          />
+    <div className="bg-[#1E1E1E] h-full flex items-center justify-center flex-col text-white">
+      <div className="flex flex-col items-center justify-center text-white mt-4">
+        <ErrorOutlineIcon style={{ fontSize: 80 }} />
+        <label>Bạn có chắc muốn xóa không!</label>
+        <div className="flex flex-col justify-center mt-6">
           <button
-            className="bg-[#3778DA] h-10 w-[120px] mt-5 ml-5 rounded-md text-white"
-            onClick={onSearchUser}
-          >
-            <SearchIcon />
-            Search
-          </button>
-        </div>
-        <div>
-          <button
-            className="bg-[#3778DA] h-10 w-[120px] mt-5 mr-5 rounded-md text-white"
-            onClick={handleOpen}
-          >
-            Add user
-          </button>
-          <button
-            className="bg-[#24AB62] h-10 w-[120px] mt-5 mr-5 rounded-md text-white"
-            onClick={handleOpenUpdate}
-          >
-            Update user
-          </button>
-          <button
-            className="bg-[#E14444] h-10 w-[120px] mt-5 rounded-md text-white"
+            className="bg-[#037AEB] h-12 w-[374px] mt-5 rounded-md p-3 font-semibold "
             onClick={handleDeleteClick}
           >
-            Delete user
+            Xác nhận
           </button>
-          <Modal
-            open={open}
-            onClose={handleClose}
-            aria-labelledby="parent-modal-title"
-            aria-describedby="parent-modal-description"
+          <button
+            className="bg-[grey] h-12 w-[374px] mt-5 rounded-md p-3 font-semibold "
+            onClick={onClose}
           >
-            <Box sx={style}>
-              <ModalAddUser setIsLoading={setIsLoading} onClose={handleClose} />
-            </Box>
-          </Modal>
-          <Modal
-            open={openUpdate}
-            onClose={handleCloseUpdate}
-            aria-labelledby="parent-modal-title"
-            aria-describedby="parent-modal-description"
-          >
-            <Box sx={style}>
-              <ModalUpdateUser
-                setIsLoading={setIsLoading}
-                onClose={handleCloseUpdate}
-                userIds={userIds}
-              />
-            </Box>
-          </Modal>
+            Hủy
+          </button>
         </div>
-      </div>
-      <div className="w-full">
-        <DataGrid
-          columns={columns}
-          rows={users}
-          initialState={{
-            pagination: {
-              paginationModel: { page: 0, pageSize: 5 },
-            },
-          }}
-          slots={{
-            loadingOverlay: LinearProgress,
-          }}
-          loading={isLoading}
-          pageSizeOptions={[5, 10]}
-          checkboxSelection
-          onRowSelectionModelChange={(ids) => onSelectHandle(ids)}
-        />
       </div>
     </div>
   );
-};
-
-export default ManageUser;
+}
 
 export const ModalAddUser = ({ onClose, setIsLoading }) => {
   const [username, setUsername] = useState();
@@ -284,7 +341,7 @@ export const ModalAddUser = ({ onClose, setIsLoading }) => {
   const onAddUser = async () => {
     try {
       setIsLoading(true);
-      const res = await axios.post("http://localhost:5000/api/v1/user/signup", {
+      await axios.post("http://localhost:5000/api/v1/user/signup", {
         username,
         password,
         confirmPassword,
@@ -379,7 +436,7 @@ export const ModalUpdateUser = (props) => {
       const token = localStorage.getItem("token");
       const config = {
         headers: {
-          Authorization: `Bear ${token}`,
+          Authorization: `Bearer ${token}`,
         },
       };
       const data = {

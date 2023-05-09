@@ -24,7 +24,6 @@ import ListItemButton from "@mui/material/ListItemButton";
 import CommentIcon from "@mui/icons-material/Comment";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
-import Button from "@mui/material/Button";
 import Menu from "@mui/material/Menu";
 import ManageComment from "../../components/admin/ManageComment";
 import ManageUser from "../../components/admin/ManageUser";
@@ -39,7 +38,6 @@ import PropTypes from "prop-types";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import axios from "axios";
-
 
 const style = {
   position: "absolute",
@@ -168,7 +166,7 @@ const HomePageAdmin = () => {
   const [light, setLight] = React.useState(true);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [selectedItem, setSelectedItem] = React.useState("Account");
-  
+
   const darkTheme = createTheme({
     palette: {
       mode: light ? "light" : "dark",
@@ -253,7 +251,7 @@ const HomePageAdmin = () => {
             </Typography>
             <div style={{ marginLeft: "auto", display: "flex" }}>
               <div className="flex items-center">
-                <select onChange={changeLanguage} className="color-black">
+                <select onChange={changeLanguage} className="text-black">
                   <option value="vi">vi</option>
                   <option value="en">en</option>
                 </select>
@@ -261,16 +259,22 @@ const HomePageAdmin = () => {
               <IconButton onClick={() => setLight(!light)}>
                 {light ? <Brightness7 /> : <Brightness4 />}
               </IconButton>
-              <Button
-                id="basic-button"
+              <div
                 aria-controls={openn ? "basic-menu" : undefined}
                 aria-haspopup="true"
                 aria-expanded={openn ? "true" : undefined}
                 onClick={handleClick}
-                sx={{ color: "white" }}
+                style={{ display: "flex", alignItems: "center" }}
               >
-                {name.displayName}
-              </Button>
+                <span style={{ color: "white", cursor: "pointer" }}>
+                  {name.displayName}
+                </span>
+                <img
+                  src={imgUser}
+                  alt="user"
+                  className="w-[48px] h-12 rounded-full border border-blue-500 mx-5 cursor-pointer"
+                />
+              </div>
               <Menu
                 id="basic-menu"
                 anchorEl={anchorEl}
@@ -283,11 +287,7 @@ const HomePageAdmin = () => {
                 <MenuItem onClick={handleOpenProfile}>Account Setting</MenuItem>
                 <MenuItem onClick={handleLogout}>Logout</MenuItem>
               </Menu>
-              <img
-                src={imgUser}
-                alt="user"
-                className="w-[48px] h-12 rounded-full border border-blue-500 mx-5"
-              />
+
               <Modal
                 open={openProfile}
                 onClose={handleCloseProfile}
@@ -368,7 +368,7 @@ export const ModalProfile = () => {
   const formattedDateCreated = formatDate(infor.createdAt);
   const formattedDateUpdated = formatDate(infor.updatedAt);
 
-  const [displayName, setDisplayName] = React.useState()
+  const [displayName, setDisplayName] = React.useState();
   const onChangeName = (event) => {
     const value = event.target.value;
     setDisplayName(value);
@@ -382,10 +382,12 @@ export const ModalProfile = () => {
         },
       };
       const request = await axios.put(
-        "http://localhost:5000/api/v1/user/update-profile", {displayName}, config
+        "http://localhost:5000/api/v1/user/update-profile",
+        { displayName },
+        config
       );
-      console.log(request)
-      toast.success(request.data.message)
+      console.log(request);
+      toast.success(request.data.message);
 
       window.location.reload();
     } catch (error) {
@@ -395,11 +397,11 @@ export const ModalProfile = () => {
         console.log(error);
       }
     }
-  }
+  };
 
-  const [password, setPassword] = React.useState()
-  const [newPassword, setNewPassword] = React.useState()
-  const [confirmNewPassword, setConfirmNewPassword] = React.useState()
+  const [password, setPassword] = React.useState();
+  const [newPassword, setNewPassword] = React.useState();
+  const [confirmNewPassword, setConfirmNewPassword] = React.useState();
 
   const onChangePass = (event) => {
     const value = event.target.value;
@@ -430,15 +432,15 @@ export const ModalProfile = () => {
         },
         config
       );
-      toast.success(request.data.message)
+      toast.success(request.data.message);
     } catch (error) {
-      if(error.response){
-        toast.error(error.response.data.message)
-      }else{
-        console.log(error)
+      if (error.response) {
+        toast.error(error.response.data.message);
+      } else {
+        console.log(error);
       }
     }
-  }
+  };
   return (
     <div className="bg-[#1E1E1E] h-full flex items-center flex-col text-white">
       <div className="flex flex-col text-white mt-8">
