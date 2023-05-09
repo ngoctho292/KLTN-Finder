@@ -5,7 +5,7 @@ const Modalsection = () => {
         <div className='p-4 flex text-white items-center justify-between  w-full '>
 
             <h3 className='px-3  text-[24px]'>1</h3>
-            <img src="https://source.unsplash.com/random" alt="image" className='object-contain w-[130px] h-[73px]' />
+            <img src="https://source.unsplash.com/random" className='object-contain w-[130px] h-[73px]' />
             <div className="flex flex-col">
                 <div className="flex items-center justify-between  px-4 pt-4 pb-[8px]">
                     <span className='text-base font-bold'>Han Su và Eun Hui 1</span>

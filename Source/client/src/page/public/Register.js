@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import isEmpty from "validator/lib/isEmpty";
 // import isEmail from "validator/lib/isEmail";
-import {  useNavigate } from "react-router-dom";
+// import {  useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -9,7 +9,7 @@ import "react-toastify/dist/ReactToastify.css";
 
 import logo from "../../asset/image/logo.png";
 const Register = ({onClose}) => {
-  const [email, setEmail] = useState("");
+  // const [email, setEmail] = useState("");
   const [validationMsg, setValidationMsg] = useState({});
 
   // const onChangeEmail = (event) => {
