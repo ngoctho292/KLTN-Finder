@@ -54,7 +54,7 @@ const signup = async (req, res) => {
         })
     } catch (error) {
         responseHandler.error(res, 'Đăng ký không thành công!')
-        console.log(error);
+        console.log(error)
     }
 }
 
@@ -63,7 +63,9 @@ const signin = async (req, res) => {
         const { username, password } = req.body
 
         // Chỉ định các trường cần được trả về, bao gồm cả trường roles
-        const user = await userModel.findOne({ username }).select('username password salt id displayName roles createdAt updatedAt')
+        const user = await userModel
+            .findOne({ username })
+            .select('username password salt id displayName roles createdAt updatedAt')
         if (!user) return responseHandler.badrequest(res, 'User không tồn tại!')
 
         if (!user.validPassword(password)) return responseHandler.badrequest(res, 'Sai mật khẩu, vui lòng thử lại!')
@@ -127,8 +129,8 @@ const updatePassword = async (req, res) => {
 
 // Lấy danh sách thông tin user
 const getInfo = async (req, res) => {
-  try {
-    const user = await userModel.find({roles: "user"});
+    try {
+        const user = await userModel.find({ roles: 'user' })
 
         if (!user) return responseHandler.notfound(res)
 
@@ -197,7 +199,7 @@ const getUserByUsername = async (req, res) => {
 const findUserByDisplayName = async (req, res) => {
     try {
         const { displayName } = req.body
-        const checkName = await userModel.find({ displayName: { $regex: displayName } }).select("displayName")
+        const checkName = await userModel.find({ displayName: { $regex: displayName } }).select('displayName')
         if (checkName.length > 0) {
             responseHandler.ok(res, checkName)
         } else {
@@ -207,7 +209,6 @@ const findUserByDisplayName = async (req, res) => {
         responseHandler.error(res, 'Tìm user theo tên hiển thị không thành công!')
     }
 }
-
 
 const updateUserByAdmin = async (req, res) => {
     try {
