@@ -4,9 +4,11 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                sh 'pwd'
-                sh 'npm install'
-                sh 'npm run format'
+                dir('Source/server') {
+                    sh 'pwd'
+                    sh 'npm install'
+                    sh 'npm run format'
+                }
             }
         }
         // stage('Test') {
