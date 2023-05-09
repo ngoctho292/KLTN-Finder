@@ -3,8 +3,8 @@ pipeline {
 
     stages {
         stage('Build') {
-            dir('Source/client') {
-                steps {
+            steps {
+                dir('Source/client') {
                     sh '''
                         pwd
                         npm install
