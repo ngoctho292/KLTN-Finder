@@ -4,10 +4,11 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                dir('client') {
-                    sh 'npm install'
-                    sh 'npm run build'
-                }
+                sh '''
+                    pwd
+                    npm install
+                    npm run build
+                '''
             }
         }
         // stage('Test') {
