@@ -3,15 +3,14 @@ import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
-import { Section, Banner, Modal, Footer } from '../../components'
+import { Section, Banner} from '../../components'
 import background from '../../asset/image/background.svg'
-import icons from '../../ultis/icons'
 
 
 const Home = () => {
 
     // const { BsFillPlayFill, AiFillBell } = icons
-    const [openModal, setOpenModal] = useState(false)
+    // const [openModal, setOpenModal] = useState(false)
     let settings = {
         dots: false,
         infinite: true,

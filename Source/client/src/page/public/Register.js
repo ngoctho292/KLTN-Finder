@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import isEmpty from "validator/lib/isEmpty";
-import isEmail from "validator/lib/isEmail";
-import { useHistory, useNavigate } from "react-router-dom";
+// import isEmail from "validator/lib/isEmail";
+import {  useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -12,15 +12,15 @@ const Register = ({onClose}) => {
   const [email, setEmail] = useState("");
   const [validationMsg, setValidationMsg] = useState({});
 
-  const onChangeEmail = (event) => {
-    const value = event.target.value;
-    setEmail(value);
-  };
+  // const onChangeEmail = (event) => {
+  //   const value = event.target.value;
+  //   setEmail(value);
+  // };
 
-  const onChangePassword = (event) => {
-    const value = event.target.value;
-    setPassword(value);
-  };
+  // const onChangePassword = (event) => {
+  //   const value = event.target.value;
+  //   setPassword(value);
+  // };
 
   const validateAll = () => {
     const msg = {};
@@ -77,7 +77,7 @@ const Register = ({onClose}) => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState();
   const [displayName, setDisplayName] = useState();
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const onChangeUsername = (event) => {
     const value = event.target.value;
     setUsername(value);

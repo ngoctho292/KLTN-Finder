@@ -1,6 +1,6 @@
 import { Route, Routes } from 'react-router-dom'
 
-import { Home, Login, Register, Public, Movies, Movieseris, Mylist } from './page/public'
+import { Home, Public, Movies, Movieseris, Mylist } from './page/public'
 import HomePageAdmin from './page/dashboard/HomePageAdmin';
 
 
