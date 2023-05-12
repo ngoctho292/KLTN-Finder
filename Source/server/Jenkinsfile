@@ -21,6 +21,8 @@ pipeline {
         stage('Build and push image') {
             steps {
                 dir('Source/server') {
+                    sh 'sudo service docker status'
+                    sh 'sudo service docker start'
                     sh 'docker build -t server .'
                     sh 'docker push hgthaii/server:latest'
                 }
