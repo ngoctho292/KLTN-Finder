@@ -20,7 +20,8 @@ pipeline {
         }
         stage('Build and push image') {
             steps {
-                sh 'docker build -t server /var/jenkins_home/workspace/server'
+                sh 'pwd'
+                sh 'docker build -t server .'
                 sh 'docker push hgthaii/server:latest'
             }
         }
