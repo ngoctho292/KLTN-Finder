@@ -19,12 +19,9 @@ pipeline {
             }
         }
         stage('Build and push image') {
-            when {
-                branch 'develop'
-            }
             steps {
                 sh 'docker build -t hgthaii/server:latest'
-                sh 'docker push hgthaii/server:latest '
+                sh 'docker push hgthaii/server:latest'
             }
         }
     }
