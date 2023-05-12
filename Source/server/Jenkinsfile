@@ -20,7 +20,7 @@ pipeline {
         }
         stage('Build and push image') {
             steps {
-                sh 'docker build -t hgthaii/server:latest'
+                sh 'docker build -t server .'
                 sh 'docker push hgthaii/server:latest'
             }
         }
