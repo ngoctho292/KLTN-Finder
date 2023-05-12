@@ -1,5 +1,9 @@
 pipeline {
-    agent any
+    agent {
+        node {
+            label 'server'
+        }
+    }
 
     stages {
         stage('Build') {
@@ -11,15 +15,48 @@ pipeline {
                 }
             }
         }
-        // stage('Test') {
-        //     steps {
-        //         sh 'npm test'
-        //     }
-        // }
-        // stage('Deploy') {
-        //     steps {
-        //         sh 'npm run deploy'
-        //     }
-        // }
+        stage('Test') {
+            steps {
+                scripts {
+                    sh 'node -v'
+                    sh 'npm -v'
+                    // sh 'npm run test'
+                }
+            }
+        }
+        stage('Build and push image') {
+            when {
+                branch 'develop'
+            }
+            steps {
+                scripts {
+                    sh 'docker build -t hgthaii/server:latest'
+                    sh 'docker push hgthaii/server:latest '
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            emailext (
+            subject: "SUCCESSFUL: Job '${JOB_NAME} [${BUILD_NUMBER}]'",
+            body: """<p>SUCCESSFUL: Job '${JOB_NAME} [${BUILD_NUMBER}]':</p>
+                <p>Check console output at &QUOT;<a href='${BUILD_URL}'>${JOB_NAME} [${BUILD_NUMBER}]</a>&QUOT;</p>""",
+            to: "151900024@dntu.edu.vn",
+            from: "hoangthai.txt@gmail.com"
+            )
+        }
+        failure {
+        emailext (
+            subject: "FAILED: Job '${JOB_NAME} [${BUILD_NUMBER}]'",
+            body: """<p>FAILED: Job '${JOB_NAME} [${BUILD_NUMBER}]':</p>
+                <p>Check console output at &QUOT;<a href='${BUILD_URL}'>${JOB_NAME} [${BUILD_NUMBER}]</a>&QUOT;</p>""",
+            to: "${EMAIL}",
+            from: "hoangthai.txt@gmail.com"
+        )
+        }
+
+
     }
 }
