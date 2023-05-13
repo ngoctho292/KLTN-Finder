@@ -5,7 +5,7 @@ import icons from '../ultis/icons';
 import Modalcontainer from './Modalcontainer';
 const Section = ({ height, img }) => {
 
-    const { GrClose, AiOutlineClose } = icons
+    const { AiOutlineClose } = icons
     const customStyles = {
         content: {
             top: '50%',

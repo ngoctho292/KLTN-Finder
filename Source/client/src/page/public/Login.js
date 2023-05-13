@@ -1,13 +1,13 @@
-import { useHistory, useNavigate } from 'react-router-dom'
-import React, { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
+import React, { useState } from 'react'
 import axios from "axios"
 
 import isEmpty from 'validator/lib/isEmpty'
-import isEmail from 'validator/lib/isEmail'
+// import isEmail from 'validator/lib/isEmail'
 import logo from '../../asset/image/logo.png'
-import {Box, Modal, Button} from "@mui/material";
+import {Box, Modal} from "@mui/material";
 import Register from './Register';
-import { ToastContainer,toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 
@@ -24,10 +24,10 @@ const Login = ({onClose}) => {
   const [password, setPassword] = useState("");
   const [validationMsg, setValidationMsg] = useState({});
 
-  const onChangePassword = (event) => {
-    const value = event.target.value;
-    setPassword(value);
-  };
+  // const onChangePassword = (event) => {
+  //   const value = event.target.value;
+  //   setPassword(value);
+  // };
 
   const validateAll = () => {
     const msg = {};
@@ -129,7 +129,12 @@ const Login = ({onClose}) => {
         >
           TIẾP TỤC
         </button>
-
+        {/* <span
+          className="text-white text-sm cursor-pointer mt-3s"
+          onClick={handleOpen}
+        >
+          Quên mật khẩu!
+        </span> */}
         <div className="mt-5  ">
           <span className="text-[#fff9] mr-1 text-sm">
             Bạn mới sử dụng Finder ?

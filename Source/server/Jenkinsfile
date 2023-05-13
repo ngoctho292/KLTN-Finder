@@ -1,0 +1,56 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Build') {
+            steps {
+                dir('Source/server') {
+                    sh 'pwd'
+                    sh 'npm install'
+                    sh 'npm run format'
+                }
+            }
+        }
+        stage('Test') {
+            steps {
+                sh 'node -v'
+                sh 'npm -v'
+                // sh 'npm run test'
+            }
+        }
+        stage('Build and push Docker image') {
+            steps {
+                dir('Source/server') {
+                    // sh 'sudo '
+                    // sh 'sudo service docker status'
+                    // sh 'sudo service docker start'
+                    sh 'docker build -t server .'
+                    sh 'docker push hgthaii/server:latest'
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            emailext (
+            subject: "SUCCESSFUL: Job '${JOB_NAME} [${BUILD_NUMBER}]'",
+            body: """<p>SUCCESSFUL: Job '${JOB_NAME} [${BUILD_NUMBER}]':</p>
+                <p>Check console output at &QUOT;<a href='${BUILD_URL}'>${JOB_NAME} [${BUILD_NUMBER}]</a>&QUOT;</p>""",
+            to: "${EMAIL}",
+            from: "hoangthai.txt@gmail.com"
+            )
+        }
+        failure {
+            emailext (
+                subject: "FAILED: Job '${JOB_NAME} [${BUILD_NUMBER}]'",
+                body: """<p>FAILED: Job '${JOB_NAME} [${BUILD_NUMBER}]':</p>
+                    <p>Check console output at &QUOT;<a href='${BUILD_URL}'>${JOB_NAME} [${BUILD_NUMBER}]</a>&QUOT;</p>""",
+                to: "${EMAIL}",
+                from: "hoangthai.txt@gmail.com"
+            )
+        }
+
+
+    }
+}

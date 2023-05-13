@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import Slider from "react-slick";
+import React from 'react'
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
@@ -13,6 +13,14 @@ const Home = () => {
     const { movies } = useSelector(state => state.app)
 
     const [openModal, setOpenModal] = useState(false)
+import { Section, Banner} from '../../components'
+import background from '../../asset/image/background.svg'
+
+
+const Home = () => {
+
+    // const { BsFillPlayFill, AiFillBell } = icons
+    // const [openModal, setOpenModal] = useState(false)
     let settings = {
         dots: false,
         infinite: true,
