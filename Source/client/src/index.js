@@ -4,9 +4,14 @@ import './index.css';
 import App from './App';
 import { Provider } from 'react-redux';
 import { BrowserRouter, } from 'react-router-dom'
+import reduxConfig from './redux';
 
+
+const store = reduxConfig()
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <BrowserRouter><App /></BrowserRouter>
+  <BrowserRouter>
+    <Provider store={store}> <App /></Provider>
+  </BrowserRouter>
 );
 
