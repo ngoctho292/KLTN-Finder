@@ -3,6 +3,7 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { Section, Banner, } from '../../components'
 import { useSelector } from 'react-redux';
+import Slider from 'react-slick';
 
 const Home = () => {
     const { movies } = useSelector(state => state.app)
