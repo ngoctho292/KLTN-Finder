@@ -2,8 +2,7 @@ import React from 'react'
 import { NavLink } from 'react-router-dom'
 import { MenuItem, Menu } from "@mui/material";
 import { headerMenu } from '../ultis/menu'
-import logo from '../asset/image/logo.svg'
-import user from '../asset/image/user.png'
+import logo from '../asset/image/logo.png'
 import icons from '../ultis/icons'
 
 import Backdrop from "@mui/material/Backdrop";
@@ -11,7 +10,6 @@ import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
 import Fade from "@mui/material/Fade";
 import Button from "@mui/material/Button";
-import Typography from "@mui/material/Typography";
 import Login from '../page/public/Login';
 
 const style = {

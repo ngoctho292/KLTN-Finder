@@ -1,5 +1,4 @@
 import React from 'react'
-import background from '../asset/image/background.svg'
 import { Modalsection, Banner, Modalcard } from './'
 const Modalcontainer = () => {
 

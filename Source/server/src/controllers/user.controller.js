@@ -41,7 +41,7 @@ const signup = async (req, res) => {
         const token = jsonwebtoken.sign(
             payload,
             process.env.TOKEN_SECRET,
-            { expiresIn: '24h' }, // LifeCirle Token
+            { expiresIn: '1h' }, // LifeCirle Token
         )
 
         // const { _id, ...userWithoutId } = user._doc;
@@ -54,6 +54,7 @@ const signup = async (req, res) => {
         })
     } catch (error) {
         responseHandler.error(res, 'Đăng ký không thành công!')
+        console.log(error)
     }
 }
 
@@ -62,7 +63,9 @@ const signin = async (req, res) => {
         const { username, password } = req.body
 
         // Chỉ định các trường cần được trả về, bao gồm cả trường roles
-        const user = await userModel.findOne({ username }).select('username password salt id displayName roles')
+        const user = await userModel
+            .findOne({ username })
+            .select('username password salt id displayName roles createdAt updatedAt')
         if (!user) return responseHandler.badrequest(res, 'User không tồn tại!')
 
         if (!user.validPassword(password)) return responseHandler.badrequest(res, 'Sai mật khẩu, vui lòng thử lại!')
@@ -74,10 +77,12 @@ const signin = async (req, res) => {
                 id: user.id,
                 displayName: user.displayName,
                 username: user.username,
+                createdAt: user.createdAt,
+                updatedAt: user.updatedAt,
             },
         }
         const token = jsonwebtoken.sign(payload, process.env.TOKEN_SECRET, {
-            expiresIn: '24h',
+            expiresIn: '1h',
         })
 
         // Gỡ pass và hash ra khỏi response
@@ -125,7 +130,7 @@ const updatePassword = async (req, res) => {
 // Lấy danh sách thông tin user
 const getInfo = async (req, res) => {
     try {
-        const user = await userModel.find()
+        const user = await userModel.find({ roles: 'user' })
 
         if (!user) return responseHandler.notfound(res)
 
@@ -191,6 +196,20 @@ const getUserByUsername = async (req, res) => {
     }
 }
 
+const findUserByDisplayName = async (req, res) => {
+    try {
+        const { displayName } = req.body
+        const checkName = await userModel.find({ displayName: { $regex: displayName } }).select('displayName')
+        if (checkName.length > 0) {
+            responseHandler.ok(res, checkName)
+        } else {
+            responseHandler.ok(res, displayName)
+        }
+    } catch (error) {
+        responseHandler.error(res, 'Tìm user theo tên hiển thị không thành công!')
+    }
+}
+
 const updateUserByAdmin = async (req, res) => {
     try {
         const { userId } = req.params
@@ -229,19 +248,6 @@ const updateUserByAdmin = async (req, res) => {
     }
 }
 
-// const deleteUserById = async (req, res) => {
-//     try {
-//         const { userId } = req.params
-//         const checkUserId = await userModel.findByIdAndDelete(userId)
-//         if (!checkUserId) return responseHandler.notfound(res, `Không tìm thấy user có ID: ${userId}`);
-//         responseHandler.ok(res, {
-//             statusCode: 200,
-//             message: "Xoá user thành công",
-//         });
-//     } catch {
-//         responseHandler.error(res, "Xoá user thất bại")
-//     }
-// }
 const deleteUserById = async (req, res) => {
     try {
         const userId = req.params.userId.split(',')
@@ -272,4 +278,5 @@ export default {
     deleteUserById,
     updateUserByUser,
     updateUserByAdmin,
+    findUserByDisplayName,
 }
