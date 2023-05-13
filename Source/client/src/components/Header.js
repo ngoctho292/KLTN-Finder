@@ -2,7 +2,7 @@ import React from 'react'
 import { NavLink } from 'react-router-dom'
 import { MenuItem, Menu } from "@mui/material";
 import { headerMenu } from '../ultis/menu'
-import logo from '../asset/image/logo.svg'
+import logo from '../asset/image/logo.png'
 import icons from '../ultis/icons'
 
 import Backdrop from "@mui/material/Backdrop";

@@ -1,7 +1,7 @@
 import React from 'react'
 
 import movies from '../asset/image/logomoives.png'
-import background from '../asset/image/background.svg'
+import background from '../asset/image/background.png'
 import icons from '../ultis/icons'
 
 const Banner = ({ banerModal }) => {
