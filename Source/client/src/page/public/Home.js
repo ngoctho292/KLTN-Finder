@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import React, { useEffect, useState } from 'react'
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
@@ -8,18 +7,6 @@ import Slider from 'react-slick';
 
 const Home = () => {
     const { movies } = useSelector(state => state.app)
-=======
-import React from 'react'
-import Slider from "react-slick";
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
-
-import { Section, Banner} from '../../components'
-import background from '../../asset/image/background.svg'
-
-
-const Home = () => {
->>>>>>> 2e5ab6911817722c5fc5b5f77742ebac528c557e
 
     // const { BsFillPlayFill, AiFillBell } = icons
     // const [openModal, setOpenModal] = useState(false)
