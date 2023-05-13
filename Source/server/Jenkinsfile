@@ -4,7 +4,7 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                dir('Source/server') {
+                dir('${PATH_SERVER}') {
                     sh 'pwd'
                     sh 'npm install'
                     sh 'npm run format'
@@ -20,7 +20,7 @@ pipeline {
         }
         stage('Build and push Docker image') {
             steps {
-                dir('Source/server') {
+                dir('${PATH_SERVER}') {
                     // sh 'sudo '
                     // sh 'sudo service docker status'
                     // sh 'sudo service docker start'

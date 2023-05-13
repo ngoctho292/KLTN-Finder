@@ -1,10 +1,11 @@
 FROM node:latest
-WORKDIR /usr/src/client
+WORKDIR /tmp/client
 COPY package.json package-lock.json .
-# RUN npm install -g npm
-RUN npm install
-RUN npm run build-dev
+RUN npm install redux
+RUN npm install --legacy-peer-deps
 COPY . .
+COPY public/index.html public/index.html
+RUN npm run build-dev
 EXPOSE 3000
 CMD ["npm", "start"]
 
