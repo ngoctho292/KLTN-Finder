@@ -7,7 +7,7 @@ import Slider from 'react-slick';
 
 const Home = () => {
     const { movies } = useSelector(state => state.app)
-
+    // d
     // const { BsFillPlayFill, AiFillBell } = icons
     // const [openModal, setOpenModal] = useState(false)
     let settings = {
@@ -49,7 +49,6 @@ const Home = () => {
     return (
         <div className='flex flex-col w-full '>
             <Banner />
-
             <div className="px-12 w-full">
 
                 <div className="flex flex-col mt-4">
