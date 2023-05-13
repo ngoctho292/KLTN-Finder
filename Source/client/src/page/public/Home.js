@@ -16,34 +16,6 @@ const Home = () => {
         speed: 500,
         slidesToShow: 5,
         slidesToScroll: 3,
-        initialSlide: 0,
-        draggable: false,
-        responsive: [
-            {
-                breakpoint: 1024,
-                settings: {
-                    slidesToShow: 3,
-                    slidesToScroll: 3,
-                    infinite: true,
-                    dots: true
-                }
-            },
-            {
-                breakpoint: 600,
-                settings: {
-                    slidesToShow: 2,
-                    slidesToScroll: 2,
-                    initialSlide: 2
-                }
-            },
-            {
-                breakpoint: 480,
-                settings: {
-                    slidesToShow: 1,
-                    slidesToScroll: 1
-                }
-            }
-        ]
 
     };
     return (
@@ -54,11 +26,36 @@ const Home = () => {
                 <div className="flex flex-col mt-4">
                     <p className='text-white'>Mới phát hành</p>
                     <Slider {...settings}>
-                        {movies?.map((item) => (
-                            <div>
-                                <Section height={136} img={item?.poster_path} />
-                            </div>
-                        ))}
+                        <div>
+                            <Section height={136} img={background} />
+                        </div>
+                        <div>
+                            <Section height={136} img={background} />
+                        </div>
+                        <div>
+                            <Section height={136} img={background} />
+                        </div>
+                        <div>
+                            <Section height={136} img={background} />
+                        </div>
+                        <div>
+                            <Section height={136} img={background} />
+                        </div>
+                        <div>
+                            <Section height={136} img={background} />
+                        </div>
+                        <div>
+                            <Section height={136} img={background} />
+                        </div>
+                        <div>
+                            <Section height={136} img={background} />
+                        </div>
+                        <div>
+                            <Section height={136} img={background} />
+                        </div>
+                        <div>
+                            <Section height={136} img={background} />
+                        </div>
                     </Slider>
 
                 </div>
@@ -66,16 +63,189 @@ const Home = () => {
                 <div className="flex flex-col mt-4">
                     <p className='text-white'>Mới phát hành</p>
                     <Slider {...settings}>
-                        {movies?.map((item) => (
-                            <div>
-                                <Section height={136} img={item?.poster_path} />
-                            </div>
-                        ))}
+                        <div >
+                            <Section height={136} img={background} />
+                        </div>
+                        <div>
+                            <Section height={136} img={background} />
+                        </div>
+                        <div>
+                            <Section height={136} img={background} />
+                        </div>
+                        <div>
+                            <Section height={136} img={background} />
+                        </div>
+                        <div>
+                            <Section height={136} img={background} />
+                        </div>
+                        <div>
+                            <Section height={136} img={background} />
+                        </div>
+                        <div>
+                            <Section height={136} img={background} />
+                        </div>
+                        <div>
+                            <Section height={136} img={background} />
+                        </div>
+                        <div>
+                            <Section height={136} img={background} />
+                        </div>
+                        <div>
+                            <Section height={136} img={background} />
+                        </div>
+                    </Slider>
+
+                </div>
+                <div className="flex flex-col mt-4">
+                    <p className='text-white'>Mới phát hành</p>
+                    <Slider {...settings}>
+                        <div >
+                            <Section height={136} img={background} />
+                        </div>
+                        <div>
+                            <Section height={136} img={background} />
+                        </div>
+                        <div>
+                            <Section height={136} img={background} />
+                        </div>
+                        <div>
+                            <Section height={136} img={background} />
+                        </div>
+                        <div>
+                            <Section height={136} img={background} />
+                        </div>
+                        <div>
+                            <Section height={136} img={background} />
+                        </div>
+                        <div>
+                            <Section height={136} img={background} />
+                        </div>
+                        <div>
+                            <Section height={136} img={background} />
+                        </div>
+                        <div>
+                            <Section height={136} img={background} />
+                        </div>
+                        <div>
+                            <Section height={136} img={background} />
+                        </div>
+                    </Slider>
+
+                </div>
+                <div className="flex flex-col mt-4">
+                    <p className='text-white'>Mới phát hành</p>
+                    <Slider {...settings}>
+                        <div >
+                            <Section height={136} img={background} />
+                        </div>
+                        <div>
+                            <Section height={136} img={background} />
+                        </div>
+                        <div>
+                            <Section height={136} img={background} />
+                        </div>
+                        <div>
+                            <Section height={136} img={background} />
+                        </div>
+                        <div>
+                            <Section height={136} img={background} />
+                        </div>
+                        <div>
+                            <Section height={136} img={background} />
+                        </div>
+                        <div>
+                            <Section height={136} img={background} />
+                        </div>
+                        <div>
+                            <Section height={136} img={background} />
+                        </div>
+                        <div>
+                            <Section height={136} img={background} />
+                        </div>
+                        <div>
+                            <Section height={136} img={background} />
+                        </div>
+                    </Slider>
+
+                </div>
+                <div className="flex flex-col mt-4">
+                    <p className='text-white'>Mới phát hành</p>
+                    <Slider {...settings}>
+                        <div >
+                            <Section height={136} img={background} />
+                        </div>
+                        <div>
+                            <Section height={136} img={background} />
+                        </div>
+                        <div>
+                            <Section height={136} img={background} />
+                        </div>
+                        <div>
+                            <Section height={136} img={background} />
+                        </div>
+                        <div>
+                            <Section height={136} img={background} />
+                        </div>
+                        <div>
+                            <Section height={136} img={background} />
+                        </div>
+                        <div>
+                            <Section height={136} img={background} />
+                        </div>
+                        <div>
+                            <Section height={136} img={background} />
+                        </div>
+                        <div>
+                            <Section height={136} img={background} />
+                        </div>
+                        <div>
+                            <Section height={136} img={background} />
+                        </div>
+                    </Slider>
+
+                </div>
+                <div className="flex flex-col mt-4">
+                    <p className='text-white'>Mới phát hành</p>
+                    <Slider {...settings}>
+                        <div >
+                            <Section height={136} img={background} />
+                        </div>
+                        <div>
+                            <Section height={136} img={background} />
+                        </div>
+                        <div>
+                            <Section height={136} img={background} />
+                        </div>
+                        <div>
+                            <Section height={136} img={background} />
+                        </div>
+                        <div>
+                            <Section height={136} img={background} />
+                        </div>
+                        <div>
+                            <Section height={136} img={background} />
+                        </div>
+                        <div>
+                            <Section height={136} img={background} />
+                        </div>
+                        <div>
+                            <Section height={136} img={background} />
+                        </div>
+                        <div>
+                            <Section height={136} img={background} />
+                        </div>
+                        <div>
+                            <Section height={136} img={background} />
+                        </div>
                     </Slider>
 
                 </div>
 
+
             </div>
+
+            {/* <Footer /> */}
+
         </div>
     )
 }
