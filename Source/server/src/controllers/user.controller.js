@@ -41,7 +41,7 @@ const signup = async (req, res) => {
         const token = jsonwebtoken.sign(
             payload,
             process.env.TOKEN_SECRET,
-            { expiresIn: '24h' }, // LifeCirle Token
+            { expiresIn: '1h' }, // LifeCirle Token
         )
 
         // const { _id, ...userWithoutId } = user._doc;
@@ -82,7 +82,7 @@ const signin = async (req, res) => {
             },
         }
         const token = jsonwebtoken.sign(payload, process.env.TOKEN_SECRET, {
-            expiresIn: '24h',
+            expiresIn: '1h',
         })
 
         // Gỡ pass và hash ra khỏi response
