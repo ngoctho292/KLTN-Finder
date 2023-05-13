@@ -2,9 +2,17 @@ import { Route, Routes } from 'react-router-dom'
 
 import { Home, Public, Movies, Movieseris, Mylist } from './page/public'
 import HomePageAdmin from './page/dashboard/HomePageAdmin';
-
+import * as action from './store/actions'
+import { useDispatch } from 'react-redux';
+import { useEffect } from 'react';
 
 function App() {
+
+  const dispatch = useDispatch()
+
+  useEffect(() => {
+    dispatch(action.getHome())
+  }, [])
   return (
     <>
       <Routes>
