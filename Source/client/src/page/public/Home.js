@@ -3,7 +3,7 @@ import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
-import { Section, Banner, } from '../../components'
+import { Section, Banner, Modal } from '../../components'
 import icons from '../../ultis/icons'
 import * as api from '../../apis'
 import { useSelector } from 'react-redux';
@@ -13,7 +13,24 @@ const Home = () => {
     const { movies } = useSelector(state => state.app)
     console.log(movies);
 
-    const [openModal, setOpenModal] = useState(false)
+    // const [openModal, setOpenModal] = useState(false)
+
+    const [modalIsOpen, setModalIsOpen] = useState(false);
+    const [selectedProduct, setSelectedProduct] = useState(null);
+
+    const openModal = (movies) => {
+        setSelectedProduct(movies);
+        setModalIsOpen(true);
+    };
+
+    const closeModal = () => {
+        setModalIsOpen(false);
+    };
+
+    const handleAddToCart = (movies) => {
+        console.log("Thêm sản phẩm vào giỏ hàng:", movies);
+        closeModal();
+    };
     let settings = {
         dots: false,
         infinite: true,
@@ -55,25 +72,13 @@ const Home = () => {
             <Banner />
 
             <div className="px-12 w-full">
-
                 <div className="flex flex-col mt-4">
                     <p className='text-white'>Mới phát hành</p>
                     <Slider {...settings}>
                         {movies?.map((item) => (
                             <div key={item?.id}>
-                                <Section height={136} img={item?.poster_path} />
-                            </div>
-                        ))}
-                    </Slider>
-
-                </div>
-
-                <div className="flex flex-col mt-4">
-                    <p className='text-white'>Mới phát hành</p>
-                    <Slider {...settings}>
-                        {movies?.map((item) => (
-                            <div key={item?.id}>
-                                <Section height={136} img={item?.poster_path} />
+                                <Section height={136} data={item} openModal={openModal} />
+                                <Modal isOpenModal={modalIsOpen} closeModal={closeModal} data={selectedProduct} handleAddToCart={handleAddToCart} />
                             </div>
                         ))}
                     </Slider>

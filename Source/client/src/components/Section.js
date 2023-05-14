@@ -4,8 +4,7 @@ import Modals from 'react-modal';
 import icons from '../ultis/icons';
 import Modalcontainer from './Modalcontainer';
 
-const Section = ({ height, img }) => {
-
+const Section = ({ height, img, openModal, data }) => {
     const { AiOutlineClose } = icons
     const customStyles = {
         content: {
@@ -21,18 +20,13 @@ const Section = ({ height, img }) => {
             borderRadius: '4px',
         },
     }
-    const [openModal, setOpenModal] = useState(false)
-
-    const closeModal = () => {
-        setOpenModal(false)
-    }
 
     return (
         <>
-            <div onClick={() => setOpenModal(true)} className='cursor-pointer'>
-                <img src={img} alt="movies" className={`w-[240px] object-cover rounded-md h-[${height}px] px-[4px] rounded-md `} />
+            <div onClick={() => openModal(data)} className='cursor-pointer'>
+                <img src={data?.poster_path} alt="movies" className={`w-[240px] object-cover rounded-md h-[${height}px] px-[4px] rounded-md `} />
             </div>
-            <Modals
+            {/* <Modals
                 isOpen={openModal}
                 onRequestClose={closeModal}
                 style={customStyles}
@@ -50,7 +44,7 @@ const Section = ({ height, img }) => {
                     </button>
                 </div>
 
-            </Modals>
+            </Modals> */}
         </>
     )
 }
