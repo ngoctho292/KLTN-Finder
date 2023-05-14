@@ -1,8 +1,8 @@
 FROM node:latest
 WORKDIR /tmp/server
 COPY package.json package-lock.json .
-RUN npm install
 COPY . .
+RUN npm install
 EXPOSE 5000
 CMD ["npm", "start"]
 
