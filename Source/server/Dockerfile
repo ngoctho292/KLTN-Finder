@@ -1,5 +1,5 @@
 FROM node:latest
-WORKDIR /usr/src/server
+WORKDIR /tmp/server
 COPY package.json package-lock.json .
 RUN npm install
 COPY . .
