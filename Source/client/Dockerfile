@@ -1,9 +1,8 @@
 FROM node:latest
 WORKDIR /tmp/client
 COPY package.json package-lock.json .
-RUN npm install redux
-RUN npm install --legacy-peer-deps
 COPY . .
+RUN npm install 
 COPY public/index.html public/index.html
 RUN npm run build-dev
 EXPOSE 3000
