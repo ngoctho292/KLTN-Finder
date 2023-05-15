@@ -4,16 +4,12 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
 import { Section, Banner, Modal } from '../../components'
-import icons from '../../ultis/icons'
-import * as api from '../../apis'
 import { useSelector } from 'react-redux';
 
 const Home = () => {
 
     const { movies } = useSelector(state => state.app)
     console.log(movies);
-
-    // const [openModal, setOpenModal] = useState(false)
 
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState(null);
