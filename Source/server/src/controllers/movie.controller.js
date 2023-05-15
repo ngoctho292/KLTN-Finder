@@ -147,5 +147,59 @@ const getMovieByGenre = async (req, res) => {
   }
 };
 
+const updateMovie = async (req, res) => {
+    try {
+        const {movieId} = req.params
+        const {
+            title,
+            logo,
+            duration,
+            release_date,
+            poster_path,
+            overview,
+            trailer,
+            video,
+            genres,
+            episodes,
+            casts,
+            program_type,
+            age_rating,
+            creators,
+            item_genre,
+        } = req.body
+        const movie = await movieModel.findById(movieId)
+        if (!movie) return responseHandler.notfound(res, "Không tìm thấy phim trong hệ thống.")
 
-export default { createMovie, deleteMovie, getAllMovies, getMovieById, getMovieByGenre }
+        const genresParse = JSON.parse(genres)
+        const castParse = JSON.parse(casts)
+        const posterParse = JSON.parse(poster_path)
+        const episodesParse = JSON.parse(episodes)
+        const programParse = JSON.parse(program_type)
+        const creatorsParse = JSON.parse(creators)
+        
+        movie.title = title
+        movie.logo = logo
+        movie.duration = duration
+        movie.release_date = release_date
+        movie.poster_path = posterParse
+        movie.overview = overview
+        movie.trailer = trailer
+        movie.video = video
+        movie.genres = genresParse
+        movie.episodes = episodesParse
+        movie.casts = castParse
+        movie.program_type = programParse
+        movie.age_rating = age_rating
+        movie.creators = creatorsParse
+        movie.item_genre = item_genre
+
+        await movie.save()
+        responseHandler.ok(res, movie)
+    } catch (error) {
+        console.log(error);
+        responseHandler.error(res, "Update không thành công!")
+    }
+}
+
+
+export default { createMovie, deleteMovie, getAllMovies, getMovieById, getMovieByGenre, updateMovie }
