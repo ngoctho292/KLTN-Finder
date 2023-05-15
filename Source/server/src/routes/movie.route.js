@@ -14,6 +14,13 @@ router.get(
     movieController.getMovieByGenre
 )
 
+router.put(
+    '/:movieId',
+    tokenMiddleware.auth,
+    authorizeMiddleware.allowAdminOnly,
+    movieController.updateMovie
+)
+
 router.get('/:filmId', movieController.getMovieById)
 
 router.post(
