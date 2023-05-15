@@ -124,23 +124,25 @@ const getMovieByGenre = async (req, res) => {
     const { genreId } = req.params;
 
     // Tìm kiếm thể loại trong cơ sở dữ liệu
-      const genre = await genreModel.findById(genreId);
+    const genre = await genreModel.findById(genreId)
     if (!genre) {
       return responseHandler.notfound(res, 'Không tìm thấy thể loại.');
     }
 
     // Tìm kiếm phim có cùng thể loại
-    const movies = await movieModel.findById(genreId).sort('-createAt')
+    const movies = []
     const listMovie = await movieModel.find().sort('-createAt')
 
-    for (const movie in listMovie) {
-        console.log(movie.genres)
+    for (const index in listMovie) {
+        const movie = listMovie[index]
+        if (Array.isArray(movie.genres) && movie.genres.some((g) => g && g._id && g._id.toString() === genreId)) {
+            movies.push(movie)
+        }
     }
-    // console.log(getAllMovie[0].title)
-
-
     responseHandler.ok(res, movies);
-  } catch {
+
+  } catch (error) {
+      console.log(error);
     responseHandler.error(res, 'Lấy danh sách phim theo thể loại thất bại.');
   }
 };
