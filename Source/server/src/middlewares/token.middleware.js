@@ -1,4 +1,5 @@
 import responseHandler from '../handlers/response.handler.js'
+import refreshtokenModel from '../models/refreshtoken.model.js'
 import userModel from '../models/user.model.js'
 import jsonwebtoken from 'jsonwebtoken'
 
@@ -40,6 +41,87 @@ const auth = async (req, res, next) => {
     next()
 }
 
+const verifyTokenAndRefresh = async (req, res, next) => {
+    const {accessToken} = req.cookies
+
+    try {
+        // Kiểm tra tính hợp lệ của access token
+        const decoded = jsonwebtoken.verify(accessToken, process.env.TOKEN_SECRET)
+        // Thêm thông tin người dùng vào đối tượng yêu cầu
+        req.user = decoded.user
+        // Tiếp tục xử lý yêu cầu
+        next()
+    } catch (error) {
+        if (error.name === 'TokenExpiredError') {
+            // Access token đã hết hạn, kiểm tra refresh token
+            const {refreshToken} = req.cookies
+
+            try {
+                // Kiểm tra tính hợp lệ của refresh token
+                const refreshTokenDoc = await refreshtokenModel.findOne({ token: refreshToken })
+                if (!refreshTokenDoc) {
+                    responseHandler.badrequest(res, 'Refresh token không hợp lệ')
+                }
+
+                const user = await userModel
+                    .findById(refreshTokenDoc.user.id)
+                    .select('username password salt id displayName roles createdAt updatedAt')
+                if (!user) return responseHandler.badrequest(res, 'Người dùng không tồn tại!')
+
+                const payload = {
+                    roles: user.roles,
+                    infor: {
+                        id: user.id,
+                        displayName: user.displayName,
+                        username: user.username,
+                        createdAt: user.createdAt,
+                        updatedAt: user.updatedAt,
+                    },
+                }
+
+                const newAccessToken = jsonwebtoken.sign(payload, process.env.TOKEN_SECRET, {
+                    expiresIn: '30m',
+                })
+                const newRefreshToken = jsonwebtoken.sign(payload, process.env.TOKEN_SECRET)
+
+                function calculateExpiryDate() {
+                    const expiresInDays = 30 // Số ngày hết hạn của Refresh Token
+                    const expiryDate = new Date()
+                    expiryDate.setDate(expiryDate.getDate() + expiresInDays)
+                    return expiryDate
+                }
+
+                refreshTokenDoc.token = newRefreshToken
+                await refreshTokenDoc.save()
+
+                res.cookie('accessToken', newAccessToken, {
+                    httpOnly: true,
+                    maxAge: 0.5 * 30 * 60 * 1000,
+                    secure: true,
+                    sameSite: true,
+                })
+                res.cookie('refreshToken', newRefreshToken, {
+                    httpOnly: true,
+                    maxAge: calculateExpiryDate(),
+                    secure: true,
+                    sameSite: true,
+                })
+
+                req.user = user
+
+                next()
+
+            } catch (error) {
+                console.log(error);
+                responseHandler.unauthorize(res, 'Token không hợp lệ.')
+            }
+        } else {
+            console.log(error)
+            responseHandler.unauthorize(res, 'Token không hợp lệ!')
+        }
+    }
+}
+
 const tokenGlobal = async (req, res) => {
     try {
         const { username, password, client_id, client_secret } = req.body
@@ -75,4 +157,4 @@ const tokenGlobal = async (req, res) => {
     }
 }
 
-export default { auth, tokenDecode, tokenGlobal }
+export default { auth, tokenDecode, tokenGlobal, verifyTokenAndRefresh }

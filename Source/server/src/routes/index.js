@@ -13,8 +13,8 @@ router.use('/user', userRoute)
 router.use('/person', personRoute)
 router.use('/movies', movieRoute)
 router.use('/reviews', reviewRoute)
-router.use('/:mediaType', mediaRoute)
+router.use('/genres', mediaRoute)
 router.use('/auth', tokenRoute)
-router.use('/cast', castRoute)
+router.use('/casts', castRoute)
 
 export default router

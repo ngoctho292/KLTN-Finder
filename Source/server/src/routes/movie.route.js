@@ -10,18 +10,25 @@ const router = express.Router()
 router.get('/', movieController.getAllMovies)
 
 router.get(
-    '/:genreId',
+    '/genre/:genreId',
     movieController.getMovieByGenre
 )
+router.get('/:movieId', movieController.getMovieById)
+
+router.get('/:movieId/view', movieController.incrementViews)
+
+router.get('/hot-movies/top-movies', movieController.getHotMovies)
+
+router.get('/random/random-movies', movieController.getRandomMovies)
 
 router.put(
     '/:movieId',
     tokenMiddleware.auth,
+    tokenMiddleware.verifyTokenAndRefresh,
     authorizeMiddleware.allowAdminOnly,
-    movieController.updateMovie
+    movieController.updateMovie,
 )
 
-router.get('/:filmId', movieController.getMovieById)
 
 router.post(
     '/',
@@ -45,11 +52,18 @@ router.post(
     body('creators').exists().withMessage('creators is required'),
     body('item_genre').exists().withMessage('item_genre is required'),
     tokenMiddleware.auth,
+    tokenMiddleware.verifyTokenAndRefresh,
     authorizeMiddleware.allowAdminOnly,
     requestHandler.validate,
     movieController.createMovie,
 )
 
-router.delete('/:filmId', tokenMiddleware.auth, authorizeMiddleware.allowAdminOnly, movieController.deleteMovie)
+router.delete(
+    '/:filmId',
+    tokenMiddleware.auth,
+    tokenMiddleware.verifyTokenAndRefresh,
+    authorizeMiddleware.allowAdminOnly,
+    movieController.deleteMovie,
+)
 
 export default router

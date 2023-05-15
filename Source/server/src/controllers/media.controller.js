@@ -1,10 +1,7 @@
 import responseHandler from '../handlers/response.handler.js'
 import api from '../api/api.js'
-import userModel from '../models/user.model.js'
-import reviewModel from '../models/review.model.js'
-import tokenMiddleware from '../middlewares/token.middleware.js'
-import favoriteModel from '../models/favorite.model.js'
 import genreModel from '../models/genre.model.js'
+import movieModel from '../models/movie.model.js'
 
 // const getList = async (req, res) => {
 //     try {
@@ -51,6 +48,28 @@ const getGenres = async (req, res) => {
         return responseHandler.ok(res, response)
     } catch {
         responseHandler.error(res, 'Lấy danh sách thể loại thất bại!')
+    }
+}
+
+const getFilmOfGenre = async (req, res) => {
+    try {
+        const { genreId } = req.params
+        const checkGenre = await genreModel.findById(genreId)
+        if (!checkGenre) return responseHandler.notfound(res, "Không tìm thấy thể loại trong hệ thống.")
+        const listMovies = []
+        const getAllMovies = await movieModel.find().sort('-createdAt')
+        for (const index in getAllMovies) {
+            const movie = getAllMovies[index]
+            if (Array.isArray(movie.genres) && movie.genres.some((g) => g && g._id && g._id.toString() === genreId)) {
+                listMovies.push(movie)
+            }
+        }
+
+        responseHandler.ok(res, listMovies)
+
+    } catch (error) {
+        console.log(error);
+        responseHandler.error(res, 'Lấy danh sách phim từ thể loại thất bại')
     }
 }
 
@@ -115,4 +134,4 @@ const search = async (req, res) => {
 //     }
 // }
 
-export default { getGenres, search, addGenres }
+export default { getGenres, search, addGenres, getFilmOfGenre }

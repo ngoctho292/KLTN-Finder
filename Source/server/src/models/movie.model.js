@@ -1,4 +1,4 @@
-import mongoose, { Schema } from 'mongoose'
+import mongoose from 'mongoose'
 import modelOptions from './model.options.js'
 
 export default mongoose.model(
@@ -60,9 +60,9 @@ export default mongoose.model(
                     },
                 },
             ],
-            cast: [
+            casts: [
                 {
-                    name: { type: String },
+                    name: String,
                 },
             ],
             program_type: [
@@ -77,6 +77,10 @@ export default mongoose.model(
                 },
             ],
             item_genre: String,
+            views: {
+                type: Number,
+                default: 0,
+            },
         },
         modelOptions,
     ),

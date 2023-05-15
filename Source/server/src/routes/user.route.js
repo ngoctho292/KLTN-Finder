@@ -62,6 +62,12 @@ router.post(
     userController.signin,
 )
 
+router.post(
+    '/signout',
+    tokenMiddleware.auth,
+    userController.signout
+)
+
 router.put(
     '/update-password',
     tokenMiddleware.auth,
@@ -85,15 +91,27 @@ router.put(
             return true
         }),
     requestHandler.validate,
+    tokenMiddleware.verifyTokenAndRefresh,
     userController.updatePassword,
 )
 
-router.post('/', tokenMiddleware.auth, userController.findUserByDisplayName)
-router.get('/info', tokenMiddleware.auth, userController.getInfo)
+router.post('/', tokenMiddleware.auth, tokenMiddleware.verifyTokenAndRefresh, userController.findUserByDisplayName)
+router.get('/info', tokenMiddleware.auth, tokenMiddleware.verifyTokenAndRefresh, userController.getInfo)
 
-router.post('/info/:userId', tokenMiddleware.auth, authorizeMiddleware.allowAdminOnly, userController.getUserById)
+router.post(
+    '/info/:userId',
+    tokenMiddleware.auth,
+    tokenMiddleware.verifyTokenAndRefresh,
+    authorizeMiddleware.allowAdminOnly,
+    userController.getUserById,
+)
 
-router.get('/favorites', tokenMiddleware.auth, favoriteController.getFavoritesOfUser)
+router.get(
+    '/favorites',
+    tokenMiddleware.auth,
+    tokenMiddleware.verifyTokenAndRefresh,
+    favoriteController.getFavoritesOfUser,
+)
 
 router.post(
     '/favorites',
@@ -112,10 +130,17 @@ router.post(
     body('mediaRate').exists().withMessage('mediaRate is required'),
     tokenMiddleware.auth,
     requestHandler.validate,
+    tokenMiddleware.verifyTokenAndRefresh,
     favoriteController.addFavorite,
 )
 
-router.get('/', tokenMiddleware.auth, authorizeMiddleware.allowAdminOnly, userController.getUserByUsername)
+router.get(
+    '/',
+    tokenMiddleware.auth,
+    tokenMiddleware.verifyTokenAndRefresh,
+    authorizeMiddleware.allowAdminOnly,
+    userController.getUserByUsername,
+)
 
 router.put(
     '/update-profile',
@@ -125,13 +150,31 @@ router.put(
         .isLength({ min: 4 })
         .withMessage('displayName minimum 4 characters'),
     tokenMiddleware.auth,
+    tokenMiddleware.verifyTokenAndRefresh,
     userController.updateUserByUser,
 )
 
-router.put('/info/:userId', tokenMiddleware.auth, authorizeMiddleware.allowAdminOnly, userController.updateUserByAdmin)
+router.put(
+    '/info/:userId',
+    tokenMiddleware.auth,
+    tokenMiddleware.verifyTokenAndRefresh,
+    authorizeMiddleware.allowAdminOnly,
+    userController.updateUserByAdmin,
+)
 
-router.delete('/:userId', tokenMiddleware.auth, authorizeMiddleware.allowAdminOnly, userController.deleteUserById)
+router.delete(
+    '/:userId',
+    tokenMiddleware.auth,
+    tokenMiddleware.verifyTokenAndRefresh,
+    authorizeMiddleware.allowAdminOnly,
+    userController.deleteUserById,
+)
 
-router.delete('/favorites/:favoriteId', tokenMiddleware.auth, favoriteController.removeFavorite)
+router.delete(
+    '/favorites/:favoriteId',
+    tokenMiddleware.auth,
+    tokenMiddleware.verifyTokenAndRefresh,
+    favoriteController.removeFavorite,
+)
 
 export default router
