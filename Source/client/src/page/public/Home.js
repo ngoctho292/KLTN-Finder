@@ -23,10 +23,7 @@ const Home = () => {
         setModalIsOpen(false);
     };
 
-    const handleAddToCart = (movies) => {
-        console.log("Thêm sản phẩm vào giỏ hàng:", movies);
-        closeModal();
-    };
+
     let settings = {
         dots: false,
         infinite: true,
@@ -35,6 +32,7 @@ const Home = () => {
         slidesToScroll: 3,
         initialSlide: 0,
         draggable: false,
+        adaptiveHeight: true,
         responsive: [
             {
                 breakpoint: 1024,
@@ -74,7 +72,7 @@ const Home = () => {
                         {movies?.map((item) => (
                             <div key={item?.id}>
                                 <Section height={136} data={item} openModal={openModal} />
-                                <Modal isOpenModal={modalIsOpen} closeModal={closeModal} data={selectedProduct} handleAddToCart={handleAddToCart} />
+                                <Modal isOpenModal={modalIsOpen} closeModal={closeModal} data={selectedProduct} />
                             </div>
                         ))}
                     </Slider>
