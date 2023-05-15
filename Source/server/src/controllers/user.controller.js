@@ -108,9 +108,9 @@ const signin = async (req, res) => {
         const refreshTokenDoc = new refreshtokenModel({
             token: refreshToken,
             expiryDate: calculateExpiryDate(),
-            user: user.id
+            user: user.id,
         })
-        console.log(refreshTokenDoc);
+        console.log(refreshTokenDoc)
         await refreshTokenDoc.save()
 
         // Gỡ pass và hash ra khỏi response
@@ -134,7 +134,7 @@ const signin = async (req, res) => {
 const signout = async (req, res) => {
     try {
         const { refreshToken } = req.cookies
-        if(!refreshToken) return responseHandler.badrequest(res, 'Không có refreshToken')
+        if (!refreshToken) return responseHandler.badrequest(res, 'Không có refreshToken')
         res.clearCookie('accessToken')
         res.clearCookie('refreshToken')
         await refreshtokenModel.findOneAndDelete({ token: refreshToken })
@@ -143,8 +143,8 @@ const signout = async (req, res) => {
             message: 'Đăng xuất thành công!',
         })
     } catch (error) {
-        console.log(error);
-        responseHandler.error(res, "Đăng xuất không thành công!")
+        console.log(error)
+        responseHandler.error(res, 'Đăng xuất không thành công!')
     }
 }
 
@@ -245,7 +245,9 @@ const getUserByUsername = async (req, res) => {
 const findUserByDisplayName = async (req, res) => {
     try {
         const { displayName } = req.body
-        const checkName = await userModel.find({ displayName: { $regex: displayName }, roles: 'user'}).select('displayName username roles createdAt')
+        const checkName = await userModel
+            .find({ displayName: { $regex: displayName }, roles: 'user' })
+            .select('displayName username roles createdAt')
         if (checkName.length > 0) {
             responseHandler.ok(res, checkName)
         } else {

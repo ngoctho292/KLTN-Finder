@@ -33,14 +33,14 @@ const notfound = (res, message) =>
 const forbidden = (res, message) => {
     responseWithData(res, 403, {
         statusCode: 403,
-        message
+        message,
     })
 }
 
 const nocontent = (res, message) => {
     responseWithData(res, 204, {
         statusCode: 204,
-        message
+        message,
     })
 }
 

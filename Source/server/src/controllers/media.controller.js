@@ -55,7 +55,7 @@ const getFilmOfGenre = async (req, res) => {
     try {
         const { genreId } = req.params
         const checkGenre = await genreModel.findById(genreId)
-        if (!checkGenre) return responseHandler.notfound(res, "Không tìm thấy thể loại trong hệ thống.")
+        if (!checkGenre) return responseHandler.notfound(res, 'Không tìm thấy thể loại trong hệ thống.')
         const listMovies = []
         const getAllMovies = await movieModel.find().sort('-createdAt')
         for (const index in getAllMovies) {
@@ -66,9 +66,8 @@ const getFilmOfGenre = async (req, res) => {
         }
 
         responseHandler.ok(res, listMovies)
-
     } catch (error) {
-        console.log(error);
+        console.log(error)
         responseHandler.error(res, 'Lấy danh sách phim từ thể loại thất bại')
     }
 }

@@ -42,7 +42,7 @@ const auth = async (req, res, next) => {
 }
 
 const verifyTokenAndRefresh = async (req, res, next) => {
-    const {accessToken} = req.cookies
+    const { accessToken } = req.cookies
 
     try {
         // Kiểm tra tính hợp lệ của access token
@@ -54,7 +54,7 @@ const verifyTokenAndRefresh = async (req, res, next) => {
     } catch (error) {
         if (error.name === 'TokenExpiredError') {
             // Access token đã hết hạn, kiểm tra refresh token
-            const {refreshToken} = req.cookies
+            const { refreshToken } = req.cookies
 
             try {
                 // Kiểm tra tính hợp lệ của refresh token
@@ -110,9 +110,8 @@ const verifyTokenAndRefresh = async (req, res, next) => {
                 req.user = user
 
                 next()
-
             } catch (error) {
-                console.log(error);
+                console.log(error)
                 responseHandler.unauthorize(res, 'Token không hợp lệ.')
             }
         } else {

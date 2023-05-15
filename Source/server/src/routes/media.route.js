@@ -13,10 +13,7 @@ router.get('/search', mediaController.search)
 
 // http://localhost:5000/api/v1/movie/genres
 router.get('/genres', mediaController.getGenres)
-router.get(
-    '/:genreId',
-    mediaController.getFilmOfGenre
-)
+router.get('/:genreId', mediaController.getFilmOfGenre)
 router.post(
     '/genres',
     body('name').exists().withMessage('name is required').isLength({ min: 1 }).withMessage('name minimum 1 character'),

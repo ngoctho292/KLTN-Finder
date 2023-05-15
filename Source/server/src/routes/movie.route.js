@@ -9,10 +9,7 @@ const router = express.Router()
 
 router.get('/', movieController.getAllMovies)
 
-router.get(
-    '/genre/:genreId',
-    movieController.getMovieByGenre
-)
+router.get('/genre/:genreId', movieController.getMovieByGenre)
 router.get('/:movieId', movieController.getMovieById)
 
 router.get('/:movieId/view', movieController.incrementViews)
@@ -28,7 +25,6 @@ router.put(
     authorizeMiddleware.allowAdminOnly,
     movieController.updateMovie,
 )
-
 
 router.post(
     '/',

@@ -21,7 +21,7 @@ const createMovie = async (req, res) => {
             program_type,
             age_rating,
             creators,
-            item_genre
+            item_genre,
         } = req.body
         const checkTitle = await movieModel.findOne({ title })
         if (checkTitle) return responseHandler.badrequest(res, 'Phim đã tồn tại trong hệ thống!')
@@ -119,43 +119,42 @@ const getMovieById = async (req, res) => {
         // console.log(getMovie);
         responseHandler.ok(res, movies)
     } catch (error) {
-        console.log(error);
+        console.log(error)
         responseHandler.error(res, 'Lấy thông tin phim thất bại.')
     }
 }
 
 // Lấy danh sách phim theo thể loại
 const getMovieByGenre = async (req, res) => {
-  try {
-    const { genreId } = req.params;
+    try {
+        const { genreId } = req.params
 
-    // Tìm kiếm thể loại trong cơ sở dữ liệu
-    const genre = await genreModel.findById(genreId)
-    if (!genre) {
-      return responseHandler.notfound(res, 'Không tìm thấy thể loại.');
-    }
-
-    // Tìm kiếm phim có cùng thể loại
-    const movies = []
-    const listMovie = await movieModel.find().sort('-createAt')
-
-    for (const index in listMovie) {
-        const movie = listMovie[index]
-        if (Array.isArray(movie.genres) && movie.genres.some((g) => g && g._id && g._id.toString() === genreId)) {
-            movies.push(movie)
+        // Tìm kiếm thể loại trong cơ sở dữ liệu
+        const genre = await genreModel.findById(genreId)
+        if (!genre) {
+            return responseHandler.notfound(res, 'Không tìm thấy thể loại.')
         }
-    }
-    responseHandler.ok(res, movies);
 
-  } catch (error) {
-      console.log(error);
-    responseHandler.error(res, 'Lấy danh sách phim theo thể loại thất bại.');
-  }
-};
+        // Tìm kiếm phim có cùng thể loại
+        const movies = []
+        const listMovie = await movieModel.find().sort('-createAt')
+
+        for (const index in listMovie) {
+            const movie = listMovie[index]
+            if (Array.isArray(movie.genres) && movie.genres.some((g) => g && g._id && g._id.toString() === genreId)) {
+                movies.push(movie)
+            }
+        }
+        responseHandler.ok(res, movies)
+    } catch (error) {
+        console.log(error)
+        responseHandler.error(res, 'Lấy danh sách phim theo thể loại thất bại.')
+    }
+}
 
 const updateMovie = async (req, res) => {
     try {
-        const {movieId} = req.params
+        const { movieId } = req.params
         const {
             title,
             logo,
@@ -174,7 +173,7 @@ const updateMovie = async (req, res) => {
             item_genre,
         } = req.body
         const movie = await movieModel.findById(movieId)
-        if (!movie) return responseHandler.notfound(res, "Không tìm thấy phim trong hệ thống.")
+        if (!movie) return responseHandler.notfound(res, 'Không tìm thấy phim trong hệ thống.')
 
         const genresParse = JSON.parse(genres)
         const castParse = JSON.parse(casts)
@@ -182,7 +181,7 @@ const updateMovie = async (req, res) => {
         const episodesParse = JSON.parse(episodes)
         const programParse = JSON.parse(program_type)
         const creatorsParse = JSON.parse(creators)
-        
+
         movie.title = title
         movie.logo = logo
         movie.duration = duration
@@ -202,8 +201,8 @@ const updateMovie = async (req, res) => {
         await movie.save()
         responseHandler.ok(res, movie)
     } catch (error) {
-        console.log(error);
-        responseHandler.error(res, "Update không thành công!")
+        console.log(error)
+        responseHandler.error(res, 'Update không thành công!')
     }
 }
 
@@ -238,7 +237,7 @@ const getHotMovies = async (req, res) => {
     try {
         // Lấy danh sách các bộ phim được sắp xếp theo trường "views" giảm dần và giới hạn chỉ lấy 10 bộ phim đầu tiên
         const hotMovies = await movieModel.aggregate([{ $sort: { views: -1 } }, { $limit: 10 }])
-        if(!hotMovies) return responseHandler.badrequest(res, 'Không có phim hot')
+        if (!hotMovies) return responseHandler.badrequest(res, 'Không có phim hot')
 
         responseHandler.ok(res, hotMovies)
     } catch (error) {
@@ -260,11 +259,9 @@ const getRandomMovies = async (req, res) => {
         responseHandler.ok(res, randomMovie)
     } catch (error) {
         console.error(error)
-        responseHandler.error(res, "Không random được phim")
+        responseHandler.error(res, 'Không random được phim')
     }
 }
-
-
 
 export default {
     getAllMovies,
