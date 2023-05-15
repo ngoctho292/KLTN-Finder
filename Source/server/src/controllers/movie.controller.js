@@ -6,23 +6,24 @@ import movieModel from '../models/movie.model.js'
 const createMovie = async (req, res) => {
     try {
         const {
-            type,
             title,
-            overview,
-            poster_path,
+            logo,
+            duration,
             release_date,
-            status,
-            vote_average,
-            genres,
-            backdrop_path,
+            poster_path,
+            overview,
             trailer,
             video,
-            runtime,
-            cast,
+            genres,
+            episodes,
+            casts,
+            program_type,
+            age_rating,
+            creators,
+            item_genre
         } = req.body
         const checkTitle = await movieModel.findOne({ title })
         if (checkTitle) return responseHandler.badrequest(res, 'Phim đã tồn tại trong hệ thống!')
-        const [day = '', month = '', year = ''] = release_date.split(',')
 
         const genresParse = JSON.parse(genres)
         let names = []
@@ -37,26 +38,28 @@ const createMovie = async (req, res) => {
             }),
         )
 
-        const backdrop_pathParse = JSON.parse(backdrop_path)
-        const castParse = JSON.parse(cast)
-        console.log(castParse)
+        const castParse = JSON.parse(casts)
+        const posterParse = JSON.parse(poster_path)
+        const episodesParse = JSON.parse(episodes)
+        const programParse = JSON.parse(program_type)
+        const creatorsParse = JSON.parse(creators)
         const movie = await new movieModel({
-            type,
             title,
+            logo,
+            duration,
+            release_date,
+            poster_path: posterParse,
             overview,
-            poster_path,
-            release_date: [{ day, month, year }],
-            status,
-            vote_average,
-            genres: getName,
-            backdrop_path: backdrop_pathParse,
             trailer,
             video,
-            runtime,
-            cast: castParse,
+            genres: getName,
+            episodes: episodesParse,
+            casts: castParse,
+            program_type: programParse,
+            age_rating,
+            creators: creatorsParse,
+            item_genre,
         })
-        // console.log(movie);
-
         try {
             await movie.save()
         } catch (error) {
@@ -115,4 +118,32 @@ const getMovieById = async (req, res) => {
     }
 }
 
-export default { createMovie, deleteMovie, getAllMovies, getMovieById }
+// Lấy danh sách phim theo thể loại
+const getMovieByGenre = async (req, res) => {
+  try {
+    const { genreId } = req.params;
+
+    // Tìm kiếm thể loại trong cơ sở dữ liệu
+      const genre = await genreModel.findById(genreId);
+    if (!genre) {
+      return responseHandler.notfound(res, 'Không tìm thấy thể loại.');
+    }
+
+    // Tìm kiếm phim có cùng thể loại
+    const movies = await movieModel.findById(genreId).sort('-createAt')
+    const listMovie = await movieModel.find().sort('-createAt')
+
+    for (const movie in listMovie) {
+        console.log(movie.genres)
+    }
+    // console.log(getAllMovie[0].title)
+
+
+    responseHandler.ok(res, movies);
+  } catch {
+    responseHandler.error(res, 'Lấy danh sách phim theo thể loại thất bại.');
+  }
+};
+
+
+export default { createMovie, deleteMovie, getAllMovies, getMovieById, getMovieByGenre }

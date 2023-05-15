@@ -5,64 +5,78 @@ export default mongoose.model(
     'Movie',
     mongoose.Schema(
         {
-            // filmId: {
-            //     type: Schema.Types.ObjectId,
-            //     // required: true,
-            // },
-            type: {
-                type: String,
-                enum: ['tv', 'movie'],
-                required: true,
-            },
             title: {
                 type: String,
                 required: true,
             },
+            logo: {
+                type: String,
+                required: true,
+            },
+            duration: {
+                type: String,
+                required: true,
+            },
+            release_date: {
+                type: String,
+                required: true,
+            },
+            poster_path: [
+                {
+                    path: { type: String },
+                },
+            ],
             overview: {
                 type: String,
                 required: true,
             },
-            poster_path: {
-                type: String,
-                required: true,
-            },
-            release_date: [
-                {
-                    day: { type: Number },
-                    month: { type: Number },
-                    year: { type: Number },
-                },
-            ],
-            status: {
-                type: String,
-                required: false,
-            },
-            vote_average: {
-                type: Number,
-                required: true,
-            },
-            genres: [{ name: { type: String } }],
-            backdrop_path: [{ path: { type: String } }],
             trailer: {
                 type: String,
-                required: true,
             },
             video: {
                 type: String,
-                required: false,
             },
-            runtime: {
-                type: String,
-                required: true,
-            },
-            cast: [
+            genres: [
                 {
-                    character: { type: String },
-                    profile_path: { type: String },
-                    birthYear: { type: Number },
-                    summary: { type: String },
+                    name: {
+                        type: String,
+                        require: true,
+                    },
                 },
             ],
+            episodes: [
+                {
+                    episode_title: {
+                        type: String,
+                    },
+                    episode_runtime: {
+                        type: String,
+                    },
+                    episode_image: {
+                        type: String,
+                    },
+                    episode_description: {
+                        type: String,
+                    },
+                },
+            ],
+            cast: [
+                {
+                    name: { type: String },
+                },
+            ],
+            program_type: [
+                {
+                    name: String,
+                },
+            ],
+            age_rating: String,
+            creators: [
+                {
+                    name: String,
+                },
+            ],
+            item_genre: String,
         },
         modelOptions,
     ),
