@@ -245,7 +245,7 @@ const getUserByUsername = async (req, res) => {
 const findUserByDisplayName = async (req, res) => {
     try {
         const { displayName } = req.body
-        const checkName = await userModel.find({ displayName: { $regex: displayName } }).select('displayName')
+        const checkName = await userModel.find({ displayName: { $regex: displayName }, roles: 'user'}).select('displayName username roles createdAt')
         if (checkName.length > 0) {
             responseHandler.ok(res, checkName)
         } else {

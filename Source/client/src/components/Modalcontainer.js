@@ -12,7 +12,7 @@ const Modalcontainer = ({ data }) => {
                             <div className="flex text-base mt-[18px]">
                                 {/* <span className="mr-2 text-[#46D369]">Độ trùng: 94%</span> */}
                                 <span className="mr-2 text-white">
-                                    {`${data?.release_date[0][0]}${data?.release_date[0][1]}${data?.release_date[0][2]}${data?.release_date[0][3]}`}
+                                    {data?.release_date ? data?.release_date : ''}
                                 </span>
                                 {data?.episodes.length !== 0 && <span className="mr-2 text-white">{`${data?.episodes.length + 1} Tập`}</span>}
 
@@ -22,9 +22,9 @@ const Modalcontainer = ({ data }) => {
                             </div>
                             <div className="flex text-sm mb-[26px]">
                                 <span className="  mr-2 px-[0.4rem] border text-white border-white bg-transparent flex justify-center items-center">
-                                    16+
+                                    {data?.age_rating}
                                 </span>
-                                <span className=" text-white">ngôn ngữ</span>
+                                {/* <span className=" text-white">ngôn ngữ</span> */}
                             </div>
                             <div className="text-sm text-white ">
                                 <p className="">
@@ -35,19 +35,21 @@ const Modalcontainer = ({ data }) => {
                         <div className="w-[30%] my-[18px]">
                             <div className=" text-white text-sm mb-[7px] mr-[7px]">
                                 <span className="text-[#777]">Diễn viên: </span>
-                                {data?.casts.slice(0, 5).map((item, index) => (
+                                {data?.casts.length !== 0 && data?.casts.slice(0, 5).map((item, index) => (
                                     <span key={item._id}>{`${item.name}${index < 4 ? ', ' : ''}`}</span>
                                 ))}
                             </div>
                             <div className=" text-white text-sm  my-[7px] mr-[7px]">
                                 <span className="text-[#777]">Thể loại: </span>
-                                {data?.genres.slice(0, 5).map((item, index) => (
-                                    <span>{`${item.name}${index < 4 ? ', ' : ''}`}</span>
+                                {data?.genres.map((item, index) => (
+                                    <span key={item._id}> {`${item.name}${index < item.length ? ', ' : ''}`}</span>
                                 ))}
                             </div>
                             <div className="text-sm text-white my-[7px] mr-[7px]">
                                 <span className="text-[#777]">Chương trình này : </span>
-
+                                {data?.program_type.map((item, index) => (
+                                    <span key={item._id}> {`${item.name}${index < item.length ? ', ' : ''}`}</span>
+                                ))}
                             </div>
                         </div>
                     </div>
@@ -131,21 +133,28 @@ const Modalcontainer = ({ data }) => {
                         <div className="text-sm  ">
                             <span className="text-[#777777]">Diễn viên: </span>
                             {data?.casts.map((item, index) => (
-                                <span key={item._id}>{`${item.name}${index < 4 ? ', ' : ''}`}</span>
+                                <span key={item._id}>{`${item.name}${index < item.length ? ', ' : ''}`}</span>
                             ))}
                         </div>
 
                         <div className=" text-sm my-[7px] mr-[7px] w-full ">
                             <span className="text-[#777777]">Thể loại: </span>
                             {data?.genres.map((item, index) => (
-                                <span key={item._id}>{`${item.name}${index < 4 ? ', ' : ''}`}</span>
+                                <span key={item._id}>{`${item.name}${index < item.length ? ', ' : ''}`}</span>
                             ))}
                         </div>
                         <div className=" text-sm my-[7px] mr-[7px] ">
                             <span className="text-[#777777]">Chương trình này: </span>
+                            {data?.program_type.map((item, index) => (
+                                <span key={item._id}> {`${item.name}${index < item.length ? ', ' : ''}`}</span>
+                            ))}
                         </div>
-                        <div className=" text-sm my-[7px] mr-[7px] ">
+                        <div className="flex text-sm my-[7px] mr-[7px] ">
                             <span className="text-[#777777]">Xếp hạng độ tuổi: </span>
+                            <span className=" w-10 h-5 mx-2 px-[0.4rem] border text-white border-white bg-transparent flex justify-center items-center">
+                                {data?.age_rating}
+                            </span>
+                            <span> {`Phù hợp với độ tuổi từ ${data?.age_rating} trở lên`} </span>
                         </div>
                     </div>
                 </div>

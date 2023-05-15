@@ -6,20 +6,22 @@ import icons from '../ultis/icons'
 
 const Banner = ({ banerModal, data }) => {
     const { BsFillPlayFill, SlLike, AiOutlinePlus, AiOutlineExclamationCircle } = icons
-
     return (
         <div className='relative'>
-            <img src={banerModal ? data?.poster_path : background} alt="background" className='w-full object-cover mt-[-80px] z-0' />
+            <img src={banerModal ? data?.poster_path[0]?.path : background} alt="background" className='w-full object-cover mt-[-80px] z-0' />
+            {/* 
+            <video src="https://www.youtube.com/watch?v=pQh775SP_dA&pp=ygUbVHJhaWxlciBIaeG7h3Agc8SpIMOhbyDEkWVu" autoPlay ></video> */}
+
             <div className='px-12 absolute top-0 left-0 bottom-0 right-0 bg-gradient-to-t from-[rgba(0,0,0,0.5)] to-transparent  text-white'>
                 <div className="absolute top-[80px] pt-8 text-white">
                     {/* phim h.hinh */}
                 </div>
-                {/* <div className="absolute top-[40%]">
-                    <img src={data?.logo} alt="movives" />
-                </div> */}
-                <div className="absolute top-[65%]">
+                <div className="absolute top-[40%] w-[50%]">
+                    <img src={data?.logo ? data?.logo : movies} alt="movives" />
+                </div>
+                <div className="absolute top-[80%]">
                     <div className="flex flex-col">
-                        <p className='w-[45%] text-white text-[20px] leading-5 mb-5'>{data?.overview}</p>
+                        {/* <p className='w-[45%] text-white text-[20px] leading-5 mb-5'>{data?.overview}</p> */}
                         <div className='flex items-center'>
                             <button className='  flex items-center justify-center rounded-md bg-white text-black text-center font-semibold py-2 px-5 mr-2 '>
                                 <BsFillPlayFill size={35} />
