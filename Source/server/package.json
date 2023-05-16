@@ -22,7 +22,8 @@
     "express-validator": "^6.15.0",
     "jsonwebtoken": "^9.0.0",
     "mongoose": "^7.0.3",
-    "nodemon": "^2.0.22"
+    "nodemon": "^2.0.22",
+    "unidecode": "^0.1.8"
   },
   "devDependencies": {
     "prettier": "^2.8.8"

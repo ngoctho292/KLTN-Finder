@@ -9,10 +9,10 @@ import authorizeMiddleware from '../middlewares/authorize.middleware.js'
 const router = express.Router({ mergeParams: true })
 
 // http://localhost:5000/api/v1/movie/search?q=The%20Godfather&page=1
-router.get('/search', mediaController.search)
+router.get('/media/search', mediaController.search)
 
 // http://localhost:5000/api/v1/movie/genres
-router.get('/genres', mediaController.getGenres)
+router.get('/', mediaController.getGenres)
 router.get('/:genreId', mediaController.getFilmOfGenre)
 router.post(
     '/genres',

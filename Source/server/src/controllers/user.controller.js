@@ -83,7 +83,7 @@ const signin = async (req, res) => {
         }
 
         const accessToken = jsonwebtoken.sign(payload, process.env.TOKEN_SECRET, {
-            expiresIn: '30m',
+            expiresIn: '1h',
         })
 
         function calculateExpiryDate() {
@@ -95,7 +95,7 @@ const signin = async (req, res) => {
         const refreshToken = jsonwebtoken.sign(payload, process.env.TOKEN_SECRET)
         res.cookie('accessToken', accessToken, {
             httpOnly: true,
-            maxAge: 0.5 * 30 * 60 * 1000,
+            maxAge: 1 * 30 * 60 * 1000,
             // secure: true,
             // sameSite: true
         })

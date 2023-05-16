@@ -111,19 +111,11 @@ router.get(
 
 router.post(
     '/favorites',
-    body('mediaType')
+    body('movieId')
         .exists()
-        .withMessage('mediaType is required')
-        .custom((type) => ['movie', 'tv'].includes(type))
-        .withMessage('mediaType invalid'),
-    body('mediaId')
-        .exists()
-        .withMessage('mediaId is required')
+        .withMessage('movieId is required')
         .isLength({ min: 1 })
-        .withMessage('mediaId can not be empty'),
-    body('mediaTitle').exists().withMessage('mediaTitle is required'),
-    body('mediaPoster').exists().withMessage('mediaPoster is required'),
-    body('mediaRate').exists().withMessage('mediaRate is required'),
+        .withMessage('movieId can not be empty'),
     tokenMiddleware.auth,
     requestHandler.validate,
     tokenMiddleware.verifyTokenAndRefresh,
@@ -167,7 +159,7 @@ router.delete(
 )
 
 router.delete(
-    '/favorites/:favoriteId',
+    '/favorites/del-favorite',
     tokenMiddleware.auth,
     tokenMiddleware.verifyTokenAndRefresh,
     favoriteController.removeFavorite,

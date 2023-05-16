@@ -5,14 +5,11 @@ import jsonwebtoken from 'jsonwebtoken'
 
 const tokenDecode = (req) => {
     try {
-        const bearerHeader = req.headers['authorization']
+        const { accessToken } = req.cookies
 
-        if (bearerHeader) {
-            // Lấy token từ BearerToken. Ex: "Bearer eyJhbGciOiJIUzI1NiIsInR5cC"
-            const token = bearerHeader.split(' ')[1]
-
+        if (accessToken) {
             // Xác thực token
-            return jsonwebtoken.verify(token, process.env.TOKEN_SECRET)
+            return jsonwebtoken.verify(accessToken, process.env.TOKEN_SECRET)
         }
 
         return false
@@ -24,7 +21,6 @@ const tokenDecode = (req) => {
 const auth = async (req, res, next) => {
     // Lấy token đã giải mã
     const tokenDecoded = tokenDecode(req)
-
     // Nếu không có token sẽ trả lỗi 401
     if (!tokenDecoded) return responseHandler.unauthorize(res, 'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại!')
 
@@ -52,21 +48,23 @@ const verifyTokenAndRefresh = async (req, res, next) => {
         // Tiếp tục xử lý yêu cầu
         next()
     } catch (error) {
-        if (error.name === 'TokenExpiredError') {
+        if (error.name === 'JsonWebTokenError') {
             // Access token đã hết hạn, kiểm tra refresh token
             const { refreshToken } = req.cookies
 
             try {
                 // Kiểm tra tính hợp lệ của refresh token
-                const refreshTokenDoc = await refreshtokenModel.findOne({ token: refreshToken })
+                const refreshTokenDoc = await refreshtokenModel.findOne({ token: refreshToken }).select('user token')
                 if (!refreshTokenDoc) {
                     responseHandler.badrequest(res, 'Refresh token không hợp lệ')
                 }
-
+                // for (const e of refreshTokenDoc) {
+                //     console.log(e);
+                // }
                 const user = await userModel
                     .findById(refreshTokenDoc.user.id)
                     .select('username password salt id displayName roles createdAt updatedAt')
-                if (!user) return responseHandler.badrequest(res, 'Người dùng không tồn tại!')
+                if (!user) return responseHandler.badrequest(res, 'Token đã hết hạn. Vui lòng đăng nhập lại!')
 
                 const payload = {
                     roles: user.roles,
@@ -80,7 +78,7 @@ const verifyTokenAndRefresh = async (req, res, next) => {
                 }
 
                 const newAccessToken = jsonwebtoken.sign(payload, process.env.TOKEN_SECRET, {
-                    expiresIn: '30m',
+                    expiresIn: '1h',
                 })
                 const newRefreshToken = jsonwebtoken.sign(payload, process.env.TOKEN_SECRET)
 
@@ -96,7 +94,7 @@ const verifyTokenAndRefresh = async (req, res, next) => {
 
                 res.cookie('accessToken', newAccessToken, {
                     httpOnly: true,
-                    maxAge: 0.5 * 30 * 60 * 1000,
+                    maxAge: 1 * 60 * 60 * 1000,
                     secure: true,
                     sameSite: true,
                 })

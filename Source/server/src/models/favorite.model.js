@@ -5,35 +5,30 @@ export default mongoose.model(
     'Favorite',
     mongoose.Schema(
         {
-            user: {
+            userId: {
                 type: Schema.Types.ObjectId,
                 ref: 'User',
-                required: true,
+                require: true,
             },
-            content: {
+            movieId: {
                 type: String,
-                required: true,
+                require: true,
             },
-            mediaType: {
+            title: {
                 type: String,
-                enum: ['tv', 'movie'],
-                required: true,
+                // require: true,
             },
-            mediaId: {
+            poster_path: {
                 type: String,
-                required: true,
+                // require: true,
             },
-            mediaTitle: {
+            overview: {
                 type: String,
-                required: true,
+                // require: true,
             },
-            mediaPoster: {
+            trailer: {
                 type: String,
-                required: true,
-            },
-            mediaRate: {
-                type: Number,
-                required: true,
+                // require: true,
             },
         },
         modelOptions,

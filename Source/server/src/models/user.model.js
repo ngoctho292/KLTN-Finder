@@ -24,6 +24,15 @@ const userSchema = new mongoose.Schema(
             required: true,
             select: false,
         },
+        favorites: [
+            {
+                movieId: String,
+                title: String,
+                poster_path: String,
+                overview: String,
+                trailer: String,
+            },
+        ],
     },
     modelOptions,
 )

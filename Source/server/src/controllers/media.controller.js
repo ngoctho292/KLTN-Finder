@@ -1,24 +1,6 @@
 import responseHandler from '../handlers/response.handler.js'
-import api from '../api/api.js'
 import genreModel from '../models/genre.model.js'
 import movieModel from '../models/movie.model.js'
-
-// const getList = async (req, res) => {
-//     try {
-//         // Lấy thông tin page được yêu cầu trong query parameter
-//         const { page } = req.query
-
-//         // Lấy giá trị của 2 tham số từ params
-//         const { mediaType, mediaCategory } = req.params
-
-//         // Lấy danh sách media và trả về Promise
-//         const response = await api.mediaList({ mediaType, mediaCategory, page })
-
-//         return responseHandler.ok(res, response)
-//     } catch {
-//         responseHandler.error(res,"Lấy danh sách media thất bại!")
-//     }
-// }
 
 const addGenres = async (req, res) => {
     try {
@@ -67,70 +49,28 @@ const getFilmOfGenre = async (req, res) => {
 
         responseHandler.ok(res, listMovies)
     } catch (error) {
-        console.log(error)
+        // console.log(error)
         responseHandler.error(res, 'Lấy danh sách phim từ thể loại thất bại')
     }
 }
 
 const search = async (req, res) => {
     try {
-        const { mediaType } = req.params
-        const { query, page } = req.query
+        const { title } = req.query
+        if (!title || typeof title !== 'string' || title.trim() === '') {
+            return responseHandler.badrequest(res, 'Tiêu đề không hợp lệ.')
+        }
+        const regex = new RegExp(title, 'i') // Tạo biểu thức chính quy
+        const checkTitle = await movieModel.find({ title: { $regex: regex } })
+        if (!checkTitle) {
+            return responseHandler.badrequest(res, 'Không tìm thấy phim.')
+        }
 
-        const response = await api.mediaSearch({
-            query,
-            page,
-            mediaType: mediaType === 'people' ? 'person' : mediaType,
-        })
-
-        return responseHandler.ok(res, response)
-    } catch {
-        responseHandler.error(res, 'search thất bại!')
+        responseHandler.ok(res, checkTitle)
+    } catch (error) {
+        console.error(error)
+        responseHandler.error(res, 'Tìm kiếm thất bại!')
     }
 }
-
-// const getDetail = async (req, res) => {
-//     try {
-//         const { mediaType, mediaId } = req.params
-//         const params = { mediaType, mediaId }
-
-//         const media = await api.mediaDetail(params)
-//         media.credits = await api.mediaCredits(params)
-
-//         const videos = await api.mediaVideos(params)
-//         media.videos = videos
-
-//         const recommend = await api.mediaRecommend(params)
-//         media.recommend = recommend.results
-
-//         media.images = await api.mediaImages(params)
-
-//         const tokenDecoded = tokenMiddleware.tokenDecode(req)
-
-//         if (tokenDecoded) {
-//             // Tìm thông tin user
-//             const user = await userModel.findById(tokenDecoded.data)
-
-//             if (user) {
-//                 // Tìm danh sách yêu thích của user
-//                 // Nếu mediaId tồn tại: isFavorite === true
-//                 const isFavorite = await favoriteModel.findOne({
-//                     user: user.id,
-//                     mediaId
-//                 })
-
-//                 // Gán giá trị isFavorite vào media
-//                 media.isFavorite = isFavorite !== null
-//             }
-//         }
-
-//         // Lấy đánh giá, sử dụng hàm populate lấy info user đăng review và sắp xếp theo thứ tự giảm dần của thời gian tạo
-//         media.reviews = await reviewModel.find({ mediaId }).populate("user").sort("-createAt")
-
-//         return responseHandler.ok(res, media)
-//     } catch {
-//         responseHandler.error(res, "lấy danh sách review thất bại")
-//     }
-// }
 
 export default { getGenres, search, addGenres, getFilmOfGenre }
