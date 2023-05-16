@@ -1,5 +1,4 @@
-import modelOptions from './model.options.js'
-import mongoose, { Schema } from 'mongoose'
+import mongoose from 'mongoose'
 
 export default mongoose.model(
     'Genre',

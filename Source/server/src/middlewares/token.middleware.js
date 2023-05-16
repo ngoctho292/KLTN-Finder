@@ -1,17 +1,15 @@
 import responseHandler from '../handlers/response.handler.js'
+import refreshtokenModel from '../models/refreshtoken.model.js'
 import userModel from '../models/user.model.js'
 import jsonwebtoken from 'jsonwebtoken'
 
 const tokenDecode = (req) => {
     try {
-        const bearerHeader = req.headers['authorization']
+        const { accessToken } = req.cookies
 
-        if (bearerHeader) {
-            // Lấy token từ BearerToken. Ex: "Bearer eyJhbGciOiJIUzI1NiIsInR5cC"
-            const token = bearerHeader.split(' ')[1]
-
+        if (accessToken) {
             // Xác thực token
-            return jsonwebtoken.verify(token, process.env.TOKEN_SECRET)
+            return jsonwebtoken.verify(accessToken, process.env.TOKEN_SECRET)
         }
 
         return false
@@ -23,7 +21,6 @@ const tokenDecode = (req) => {
 const auth = async (req, res, next) => {
     // Lấy token đã giải mã
     const tokenDecoded = tokenDecode(req)
-
     // Nếu không có token sẽ trả lỗi 401
     if (!tokenDecoded) return responseHandler.unauthorize(res, 'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại!')
 
@@ -38,6 +35,88 @@ const auth = async (req, res, next) => {
 
     // Chuyển request đến middleware kế tiếp
     next()
+}
+
+const verifyTokenAndRefresh = async (req, res, next) => {
+    const { accessToken } = req.cookies
+
+    try {
+        // Kiểm tra tính hợp lệ của access token
+        const decoded = jsonwebtoken.verify(accessToken, process.env.TOKEN_SECRET)
+        // Thêm thông tin người dùng vào đối tượng yêu cầu
+        req.user = decoded.user
+        // Tiếp tục xử lý yêu cầu
+        next()
+    } catch (error) {
+        if (error.name === 'JsonWebTokenError') {
+            // Access token đã hết hạn, kiểm tra refresh token
+            const { refreshToken } = req.cookies
+
+            try {
+                // Kiểm tra tính hợp lệ của refresh token
+                const refreshTokenDoc = await refreshtokenModel.findOne({ token: refreshToken }).select('user token')
+                if (!refreshTokenDoc) {
+                    responseHandler.badrequest(res, 'Refresh token không hợp lệ')
+                }
+                // for (const e of refreshTokenDoc) {
+                //     console.log(e);
+                // }
+                const user = await userModel
+                    .findById(refreshTokenDoc.user.id)
+                    .select('username password salt id displayName roles createdAt updatedAt')
+                if (!user) return responseHandler.badrequest(res, 'Token đã hết hạn. Vui lòng đăng nhập lại!')
+
+                const payload = {
+                    roles: user.roles,
+                    infor: {
+                        id: user.id,
+                        displayName: user.displayName,
+                        username: user.username,
+                        createdAt: user.createdAt,
+                        updatedAt: user.updatedAt,
+                    },
+                }
+
+                const newAccessToken = jsonwebtoken.sign(payload, process.env.TOKEN_SECRET, {
+                    expiresIn: '1h',
+                })
+                const newRefreshToken = jsonwebtoken.sign(payload, process.env.TOKEN_SECRET)
+
+                function calculateExpiryDate() {
+                    const expiresInDays = 30 // Số ngày hết hạn của Refresh Token
+                    const expiryDate = new Date()
+                    expiryDate.setDate(expiryDate.getDate() + expiresInDays)
+                    return expiryDate
+                }
+
+                refreshTokenDoc.token = newRefreshToken
+                await refreshTokenDoc.save()
+
+                res.cookie('accessToken', newAccessToken, {
+                    httpOnly: true,
+                    maxAge: 1 * 60 * 60 * 1000,
+                    secure: true,
+                    sameSite: true,
+                })
+                res.cookie('refreshToken', newRefreshToken, {
+                    httpOnly: true,
+                    maxAge: calculateExpiryDate(),
+                    secure: true,
+                    sameSite: true,
+                })
+
+                req.user = user
+
+                next()
+            } catch (error) {
+                console.log(error)
+                responseHandler.unauthorize(res, 'Token không hợp lệ.')
+            }
+        } else {
+            console.log(error)
+            responseHandler.unauthorize(res, 'Token không hợp lệ!')
+        }
+    }
 }
 
 const tokenGlobal = async (req, res) => {
@@ -75,4 +154,4 @@ const tokenGlobal = async (req, res) => {
     }
 }
 
-export default { auth, tokenDecode, tokenGlobal }
+export default { auth, tokenDecode, tokenGlobal, verifyTokenAndRefresh }

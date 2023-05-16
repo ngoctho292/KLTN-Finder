@@ -14,7 +14,7 @@ const badrequest = (res, message) =>
         message,
     })
 
-const ok = (res, data) => responseWithData(res, 200, data)
+const ok = (res, data, message) => responseWithData(res, 200, data)
 
 const created = (res, data, message) => responseWithData(res, 201, data, message)
 
@@ -30,6 +30,20 @@ const notfound = (res, message) =>
         message,
     })
 
+const forbidden = (res, message) => {
+    responseWithData(res, 403, {
+        statusCode: 403,
+        message,
+    })
+}
+
+const nocontent = (res, message) => {
+    responseWithData(res, 204, {
+        statusCode: 204,
+        message,
+    })
+}
+
 export default {
     ok,
     created,
@@ -37,4 +51,6 @@ export default {
     badrequest,
     error,
     unauthorize,
+    forbidden,
+    nocontent,
 }

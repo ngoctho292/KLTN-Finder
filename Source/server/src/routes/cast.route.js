@@ -7,8 +7,9 @@ import authorizeMiddleware from '../middlewares/authorize.middleware.js'
 
 const router = express.Router()
 
-router.get('/', tokenMiddleware.auth, castController.getAllCasts)
-router.get('/:castId', tokenMiddleware.auth, castController.getCastById)
+router.get('/', castController.getAllCasts)
+router.get('/:castId', castController.getCastById)
+router.get('/:castId/film', castController.getFilmOfCast)
 
 router.post(
     '/',
@@ -33,11 +34,18 @@ router.post(
         .isLength({ min: 1 })
         .withMessage('Độ dài tối thiểu là 1 ký tự'),
     tokenMiddleware.auth,
+    tokenMiddleware.verifyTokenAndRefresh,
     authorizeMiddleware.allowAdminOnly,
     requestHandler.validate,
     castController.addCast,
 )
 
-router.delete('/:castId', tokenMiddleware.auth, authorizeMiddleware.allowAdminOnly, castController.removeCast)
+router.delete(
+    '/:castId',
+    tokenMiddleware.auth,
+    tokenMiddleware.verifyTokenAndRefresh,
+    authorizeMiddleware.allowAdminOnly,
+    castController.removeCast,
+)
 
 export default router

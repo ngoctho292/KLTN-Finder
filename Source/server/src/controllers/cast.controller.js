@@ -1,4 +1,5 @@
 import castModel from '../models/cast.model.js'
+import movieModel from '../models/movie.model.js'
 import responseHandler from '../handlers/response.handler.js'
 
 const addCast = async (req, res) => {
@@ -57,4 +58,31 @@ const removeCast = async (req, res) => {
     }
 }
 
-export default { addCast, removeCast, getAllCasts, getCastById }
+const getFilmOfCast = async (req, res) => {
+    try {
+        const { castId } = req.params
+        const cast = await castModel.findById(castId)
+        if (!cast) return responseHandler.notfound(res, 'Không tìm thấy cast')
+        const listMovies = []
+        const getAllMovies = await movieModel.find().sort('-createdAt')
+        for (const index in getAllMovies) {
+            const movie = getAllMovies[index]
+            if (Array.isArray(movie.casts) && movie.casts.some((g) => g && g._id && g._id.toString() === castId)) {
+                listMovies.push(movie)
+            }
+        }
+
+        responseHandler.ok(res, listMovies)
+    } catch (error) {
+        console.log(error)
+        responseHandler.error(res, 'Lấy danh sách phim của cast không thành công')
+    }
+}
+
+export default {
+    addCast,
+    removeCast,
+    getAllCasts,
+    getCastById,
+    getFilmOfCast,
+}

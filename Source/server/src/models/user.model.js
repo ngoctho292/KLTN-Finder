@@ -1,4 +1,4 @@
-import mongoose, { model } from 'mongoose'
+import mongoose from 'mongoose'
 import modelOptions from './model.options.js'
 import crypto from 'crypto'
 
@@ -24,6 +24,15 @@ const userSchema = new mongoose.Schema(
             required: true,
             select: false,
         },
+        favorites: [
+            {
+                movieId: String,
+                title: String,
+                poster_path: String,
+                overview: String,
+                trailer: String,
+            },
+        ],
     },
     modelOptions,
 )

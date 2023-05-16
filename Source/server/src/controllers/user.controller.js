@@ -1,5 +1,6 @@
 import jsonwebtoken from 'jsonwebtoken'
 import userModel from '../models/user.model.js'
+import refreshtokenModel from '../models/refreshtoken.model.js'
 import responseHandler from '../handlers/response.handler.js'
 import mongoose from 'mongoose'
 import tokenMiddleware from '../middlewares/token.middleware.js'
@@ -70,7 +71,6 @@ const signin = async (req, res) => {
 
         if (!user.validPassword(password)) return responseHandler.badrequest(res, 'Sai mật khẩu, vui lòng thử lại!')
 
-        // Tạo token truy cập, hạn 24h
         const payload = {
             roles: user.roles,
             infor: {
@@ -81,9 +81,37 @@ const signin = async (req, res) => {
                 updatedAt: user.updatedAt,
             },
         }
-        const token = jsonwebtoken.sign(payload, process.env.TOKEN_SECRET, {
+
+        const accessToken = jsonwebtoken.sign(payload, process.env.TOKEN_SECRET, {
             expiresIn: '1h',
         })
+
+        function calculateExpiryDate() {
+            const expiresInDays = 30 // Số ngày hết hạn của Refresh Token
+            const expiryDate = new Date()
+            expiryDate.setDate(expiryDate.getDate() + expiresInDays)
+            return expiryDate
+        }
+        const refreshToken = jsonwebtoken.sign(payload, process.env.TOKEN_SECRET)
+        res.cookie('accessToken', accessToken, {
+            httpOnly: true,
+            maxAge: 1 * 30 * 60 * 1000,
+            // secure: true,
+            // sameSite: true
+        })
+        res.cookie('refreshToken', refreshToken, {
+            httpOnly: true,
+            maxAge: calculateExpiryDate(),
+            // secure: true,
+            // sameSite: true,
+        })
+        const refreshTokenDoc = new refreshtokenModel({
+            token: refreshToken,
+            expiryDate: calculateExpiryDate(),
+            user: user.id,
+        })
+        console.log(refreshTokenDoc)
+        await refreshTokenDoc.save()
 
         // Gỡ pass và hash ra khỏi response
         user.password = undefined
@@ -95,10 +123,28 @@ const signin = async (req, res) => {
         // const { _id, ...userWithoutId } = user._doc;
 
         responseHandler.created(res, {
-            access_token: token,
+            access_token: accessToken,
+            refresh_token: refreshToken,
         })
     } catch (error) {
-        responseHandler.error(res, 'Đăng ký không thành công')
+        responseHandler.error(res, 'Đăng nhập không thành công')
+    }
+}
+
+const signout = async (req, res) => {
+    try {
+        const { refreshToken } = req.cookies
+        if (!refreshToken) return responseHandler.badrequest(res, 'Không có refreshToken')
+        res.clearCookie('accessToken')
+        res.clearCookie('refreshToken')
+        await refreshtokenModel.findOneAndDelete({ token: refreshToken })
+        responseHandler.ok(res, {
+            statusCode: 200,
+            message: 'Đăng xuất thành công!',
+        })
+    } catch (error) {
+        console.log(error)
+        responseHandler.error(res, 'Đăng xuất không thành công!')
     }
 }
 
@@ -199,7 +245,9 @@ const getUserByUsername = async (req, res) => {
 const findUserByDisplayName = async (req, res) => {
     try {
         const { displayName } = req.body
-        const checkName = await userModel.find({ displayName: { $regex: displayName } }).select('displayName')
+        const checkName = await userModel
+            .find({ displayName: { $regex: displayName }, roles: 'user' })
+            .select('displayName username roles createdAt')
         if (checkName.length > 0) {
             responseHandler.ok(res, checkName)
         } else {
@@ -271,12 +319,13 @@ const deleteUserById = async (req, res) => {
 export default {
     signup,
     signin,
+    signout,
     getInfo,
     getUserById,
-    updatePassword,
     getUserByUsername,
-    deleteUserById,
+    updatePassword,
     updateUserByUser,
     updateUserByAdmin,
     findUserByDisplayName,
+    deleteUserById,
 }
