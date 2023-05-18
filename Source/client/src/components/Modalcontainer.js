@@ -1,11 +1,20 @@
 import React from 'react'
 import { Modalsection, Banner, Modalcard } from './'
-const Modalcontainer = ({ data }) => {
+import icons from '../ultis/icons';
+
+const Modalcontainer = ({ data, closeModal }) => {
     // console.log(data?.release_date[0]);
+    const { AiOutlineClose } = icons
+
     return (
-        <div className=" bg-[#181818] text-white ">
+        <div className=" bg-[#181818] text-white rounded-lg">
             <div className="max-w-[850px] w-full ">
-                <Banner banerModal data={data} />
+                <div className='relative '>
+                    <Banner banerModal data={data} />
+                    <button onClick={closeModal} className='absolute top-[20px] right-[20px] cursor-pointer  '>
+                        <span className='w-[36px] h-[36px] rounded-full flex justify-center items-center bg-black  cursor-pointer'> <AiOutlineClose size={25} color='white' /></span>
+                    </button>
+                </div>
                 <div className="px-12">
                     <div className="flex">
                         <div className="w-[70%] flex flex-col ">
@@ -159,6 +168,7 @@ const Modalcontainer = ({ data }) => {
                     </div>
                 </div>
             </div>
+
         </div>
     )
 }

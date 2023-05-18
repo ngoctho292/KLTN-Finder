@@ -22,7 +22,7 @@ const Public = () => {
         theme="dark"
       />
 
-      <div className="w-full h-[80px] fixed top-0 left-0 right-0 z-50">
+      <div className="w-full h-[80px] fixed top-0 left-0 right-0 z-10">
         <Header />
       </div>
       <div className="w-full ">

@@ -15,4 +15,18 @@ export const getHome = () => async (dispatch) => {
         })
     }
 }
+export const randomMovies = () => async (dispatch) => {
+    try {
+        const response = await apis.apiMoviesRandom()
+        dispatch({
+            type: actionType.RANDOM_MOVIES,
+            randomMovies: response
+        })
+    } catch (error) {
+        dispatch({
+            type: actionType.RANDOM_MOVIES,
+            randomMovies: null
+        })
+    }
+}
 

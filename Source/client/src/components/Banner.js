@@ -4,6 +4,7 @@ import ReactPlayer from 'react-player';
 import movies from '../asset/image/logomoives.png'
 import background from '../asset/image/background.png'
 import icons from '../ultis/icons'
+import axios from 'axios';
 
 const Banner = ({ banerModal, data }) => {
     const { BsFillPlayFill, SlLike, AiOutlinePlus, AiOutlineExclamationCircle } = icons
@@ -12,6 +13,18 @@ const Banner = ({ banerModal, data }) => {
     const handleVideoEnd = () => {
         setPlaying(false);
     };
+
+
+
+    // axios.get('http://localhost:5000/api/v1/movies/random/random-movies')
+    //     .then(response => {
+    //         // Xử lý dữ liệu trả về khi thành công
+    //         console.log(response.data);
+    //     })
+    //     .catch(error => {
+    //         // Xử lý lỗi khi gọi API
+    //         console.error(error);
+    //     });
 
     return (
         <div className='relative'>

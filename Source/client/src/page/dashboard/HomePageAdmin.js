@@ -386,7 +386,7 @@ export const ModalProfile = () => {
         { displayName },
         config
       );
-      console.log(request);
+      // console.log(request);
       toast.success(request.data.message);
 
       window.location.reload();

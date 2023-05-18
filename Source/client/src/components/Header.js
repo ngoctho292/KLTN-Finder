@@ -1,9 +1,10 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { NavLink } from 'react-router-dom'
 import { MenuItem, Menu } from "@mui/material";
 import { headerMenu } from '../ultis/menu'
 import logo from '../asset/image/logo.png'
 import icons from '../ultis/icons'
+import { Search } from '../components/'
 
 import Backdrop from "@mui/material/Backdrop";
 import Box from "@mui/material/Box";
@@ -26,12 +27,14 @@ const Header = () => {
   const ActiveStyle = 'py-2 px-[25px]  text-[16px] text-[#02E7F5] font-bold'
   const noActiveStyle = 'py-2 px-[25px] font-medium text-[16px] text-white'
 
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
   const checkValueStorage = JSON.parse(localStorage.getItem("infor"));
-  const [anchorEl, setAnchorEl] = React.useState(null);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [isScrolled, setIsScrolled] = useState(false);
+
   const openn = Boolean(anchorEl);
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -44,11 +47,27 @@ const Header = () => {
     localStorage.removeItem("role");
     window.location.href = "/";
   };
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollTop = window.pageYOffset;
+
+      if (scrollTop > 0) {
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(false);
+      }
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
   return (
-    <div className="flex items-center mx-[48px] justify-between">
+    <div className={`flex items-center px-[48px] justify-between ${isScrolled ? 'bg-[#141414] animate-header' : 'bg-transparent animate-header'}`}>
       <div className="flex items-center">
         <div className=" ">
-          <img src={logo} alt="logo" className="object-contain" />
+          <img src={logo} alt="logo" className="object-cover max-h-20" />
         </div>
         <div className="">
           {headerMenu.map((item, index) => (
@@ -66,8 +85,10 @@ const Header = () => {
       </div>
 
       <div className="flex items-center gap-4 text-white">
+
+        <Search />
+        {/* <BiSearchAlt2 size={25} /> */}
         <AiFillBell size={25} />
-        <BiSearchAlt2 size={25} />
         {checkValueStorage === null ? (
           <div>
             <Button

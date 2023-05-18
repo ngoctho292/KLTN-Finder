@@ -8,8 +8,8 @@ import { useSelector } from 'react-redux';
 
 const Home = () => {
 
-    const { movies } = useSelector(state => state.app)
-    console.log(movies);
+    const { movies, randomMovies } = useSelector(state => state.app)
+    console.log({ randomMovies });
 
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState(null);
