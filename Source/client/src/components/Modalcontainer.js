@@ -7,7 +7,7 @@ const Modalcontainer = ({ data, closeModal }) => {
     const { AiOutlineClose } = icons
 
     return (
-        <div className=" bg-[#181818] text-white rounded-lg">
+        <div className=" bg-[#181818] text-white rounded-lg ">
             <div className="max-w-[850px] w-full ">
                 <div className='relative '>
                     <Banner banerModal data={data} />
@@ -23,7 +23,7 @@ const Modalcontainer = ({ data, closeModal }) => {
                                 <span className="mr-2 text-white">
                                     {data?.release_date ? data?.release_date : ''}
                                 </span>
-                                {data?.episodes.length !== 0 && <span className="mr-2 text-white">{`${data?.episodes.length + 1} Tập`}</span>}
+                                {data?.episodes?.length !== 0 && <span className="mr-2 text-white">{`${data?.episodes?.length + 1} Tập`}</span>}
 
                                 <span className="mr-2  px-[0.4rem] border text-white border-white bg-transparent flex justify-center items-center">
                                     HD
@@ -44,32 +44,32 @@ const Modalcontainer = ({ data, closeModal }) => {
                         <div className="w-[30%] my-[18px]">
                             <div className=" text-white text-sm mb-[7px] mr-[7px]">
                                 <span className="text-[#777]">Diễn viên: </span>
-                                {data?.casts.length !== 0 && data?.casts.slice(0, 5).map((item, index) => (
+                                {data?.casts?.length !== 0 && data?.casts?.slice(0, 5)?.map((item, index) => (
                                     <span key={item._id}>{`${item.name}${index < 4 ? ', ' : ''}`}</span>
                                 ))}
                             </div>
                             <div className=" text-white text-sm  my-[7px] mr-[7px]">
                                 <span className="text-[#777]">Thể loại: </span>
-                                {data?.genres.map((item, index) => (
-                                    <span key={item._id}> {`${item.name}${index < item.length ? ', ' : ''}`}</span>
+                                {data?.genres?.map((item, index) => (
+                                    <span key={item._id}> {`${item.name}${index < item?.length ? ', ' : ''}`}</span>
                                 ))}
                             </div>
                             <div className="text-sm text-white my-[7px] mr-[7px]">
                                 <span className="text-[#777]">Chương trình này : </span>
-                                {data?.program_type.map((item, index) => (
-                                    <span key={item._id}> {`${item.name}${index < item.length ? ', ' : ''}`}</span>
+                                {data?.program_type?.map((item, index) => (
+                                    <span key={item._id}> {`${item.name}${index < item?.length ? ', ' : ''}`}</span>
                                 ))}
                             </div>
                         </div>
                     </div>
                     <div className="">
-                        {data?.episodes.length !== 0 && (
+                        {data?.episodes?.length !== 0 && (
                             <div className="flex items-center justify-between mt-[31px] mb-[16px] font-bold">
                                 <h3 className="w-[70%] text-white text-2xl">Tập </h3>
                                 <span className="w-[30%] text-white text-lg text-right">{data?.duration}</span>
                             </div>
                         )}
-                        {data?.episodes.map((item, index) => (
+                        {data?.episodes?.map((item, index) => (
                             <Modalsection episodes={item} key={item?._id} index={index} />
                         ))}
                     </div>
@@ -141,21 +141,21 @@ const Modalcontainer = ({ data, closeModal }) => {
                         </div>
                         <div className="text-sm  ">
                             <span className="text-[#777777]">Diễn viên: </span>
-                            {data?.casts.map((item, index) => (
-                                <span key={item._id}>{`${item.name}${index < item.length ? ', ' : ''}`}</span>
+                            {data?.casts?.map((item, index) => (
+                                <span key={item._id}>{`${item.name}${index < item?.length ? ', ' : ''}`}</span>
                             ))}
                         </div>
 
                         <div className=" text-sm my-[7px] mr-[7px] w-full ">
                             <span className="text-[#777777]">Thể loại: </span>
-                            {data?.genres.map((item, index) => (
-                                <span key={item._id}>{`${item.name}${index < item.length ? ', ' : ''}`}</span>
+                            {data?.genres?.map((item, index) => (
+                                <span key={item._id}>{`${item.name}${index < item?.length ? ', ' : ''}`}</span>
                             ))}
                         </div>
                         <div className=" text-sm my-[7px] mr-[7px] ">
                             <span className="text-[#777777]">Chương trình này: </span>
-                            {data?.program_type.map((item, index) => (
-                                <span key={item._id}> {`${item.name}${index < item.length ? ', ' : ''}`}</span>
+                            {data?.program_type?.map((item, index) => (
+                                <span key={item._id}> {`${item.name}${index < item?.length ? ', ' : ''}`}</span>
                             ))}
                         </div>
                         <div className="flex text-sm my-[7px] mr-[7px] ">

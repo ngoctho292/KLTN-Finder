@@ -11,7 +11,7 @@ const Modal = ({ isOpenModal, closeModal, data, }) => {
             left: 0,
             right: 0,
             bottom: 0,
-            backgroundColor: 'transparent',
+            backgroundColor: 'rgba(0,0,0,0.05)',
             zIndex: 1000,
 
         },
@@ -20,8 +20,6 @@ const Modal = ({ isOpenModal, closeModal, data, }) => {
             left: '0',
             right: '0',
             bottom: '0',
-            // marginRight: '-50%',
-            // transform: 'translate(-50%, -50%)',
             maxHeight: '100%',
             overflowY: 'auto',
             WebkitOverflowScrolling: 'touch',
@@ -38,8 +36,8 @@ const Modal = ({ isOpenModal, closeModal, data, }) => {
             ariaHideApp={false}
             scrollable={true}
         >
-            <div className='animate-scaleUp'>
-                <div className="relative min-w-[850px] flex items-center justify-center mt-[30px] z-50 ">
+            <div className='animate-scaleUp '>
+                <div className="relative min-w-[850px] flex items-center justify-center mt-[30px] z-50  ">
                     <Modalcontainer data={data} closeModal={closeModal} />
                 </div>
 
