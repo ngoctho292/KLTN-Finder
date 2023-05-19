@@ -93,15 +93,20 @@ const signin = async (req, res) => {
             return expiryDate
         }
         const refreshToken = jsonwebtoken.sign(payload, process.env.TOKEN_SECRET)
+        res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000')
         res.cookie('accessToken', accessToken, {
             httpOnly: true,
             maxAge: 1 * 30 * 60 * 1000,
+            domain: 'localhost',
+            // path: '/api/v1',
             // secure: true,
             // sameSite: true
         })
         res.cookie('refreshToken', refreshToken, {
             httpOnly: true,
             maxAge: calculateExpiryDate(),
+            domain: 'localhost',
+            // path: '/api/v1',
             // secure: true,
             // sameSite: true,
         })
@@ -110,7 +115,7 @@ const signin = async (req, res) => {
             expiryDate: calculateExpiryDate(),
             user: user.id,
         })
-        console.log(refreshTokenDoc)
+        // console.log(refreshTokenDoc)
         await refreshTokenDoc.save()
 
         // Gỡ pass và hash ra khỏi response
@@ -127,6 +132,7 @@ const signin = async (req, res) => {
             refresh_token: refreshToken,
         })
     } catch (error) {
+        console.log(error);
         responseHandler.error(res, 'Đăng nhập không thành công')
     }
 }

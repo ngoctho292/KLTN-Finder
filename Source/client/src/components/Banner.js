@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react'
 import ReactPlayer from 'react-player';
 
+
 import movies from '../asset/image/logomoives.png'
 import background from '../asset/image/background.png'
 import icons from '../ultis/icons'
