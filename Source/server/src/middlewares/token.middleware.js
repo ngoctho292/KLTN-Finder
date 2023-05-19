@@ -51,7 +51,7 @@ const verifyTokenAndRefresh = async (req, res, next) => {
         if (error.name === 'JsonWebTokenError') {
             // Access token đã hết hạn, kiểm tra refresh token
             const { refreshToken } = req.cookies
-
+            console.log(refreshToken);
             try {
                 // Kiểm tra tính hợp lệ của refresh token
                 const refreshTokenDoc = await refreshtokenModel.findOne({ token: refreshToken }).select('user token')

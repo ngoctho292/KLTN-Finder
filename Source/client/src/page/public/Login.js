@@ -54,9 +54,11 @@ const Login = ({onClose}) => {
         username,
         password,
       });
-      localStorage.setItem("token", res.data.access_token)
+      axios.defaults.withCredentials = true //cho phép lấy cookie từ server
+      console.log(res.data.access_token);
+
+      const tokenBody = res.data.access_token
       // Lay body cua token
-      const tokenBody = res.data.access_token.split(".")[1];
 
       // Giai ma body voi base64
       const decodedTokenBody = atob(tokenBody);
