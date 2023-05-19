@@ -11,3 +11,4 @@ export const getMovies = () => new Promise(async (resolve, reject) => {
         reject(error)
     }
 })
+
