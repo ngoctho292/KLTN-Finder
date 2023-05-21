@@ -1,5 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import React, { useState } from 'react'
+import { useCookies } from 'react-cookie'
+
 import axios from "axios"
 
 import isEmpty from 'validator/lib/isEmpty'
@@ -23,6 +25,7 @@ const style = {
 const Login = ({onClose}) => {
   const [password, setPassword] = useState("");
   const [validationMsg, setValidationMsg] = useState({});
+  const [cookies, setCookie] = useCookies(['accessToken', 'refreshToken'])
 
   // const onChangePassword = (event) => {
   //   const value = event.target.value;
@@ -50,36 +53,56 @@ const Login = ({onClose}) => {
     const isValid = validateAll();
     if (!isValid) return;
     try {
-      const res = await axios.post("http://localhost:5000/api/v1/user/signin", {
-        username,
-        password,
-      });
-      // axios.defaults.withCredentials = true //cho phép lấy cookie từ server
-      
-      localStorage.setItem('token', res.data.refresh_token)
-      const tokenBody = res.data.refresh_token.split('.')[1]
-      
-      // Giai ma body voi base64
-      const decodedTokenBody = atob(tokenBody)
+        const response = await axios.post('http://localhost:5000/api/v1/user/signin', {
+            username,
+            password,
+        })
+        // axios.defaults.withCredentials = true //cho phép lấy cookie từ server
 
-      // Giai ma cac phan tu JSON cua body
-      const parsedTokenBody = JSON.parse(decodedTokenBody);
-      localStorage.setItem('infor', JSON.stringify(parsedTokenBody.infor))
-      localStorage.setItem('role', JSON.stringify(parsedTokenBody.roles))
+        const handleSetTokens = () => {
+            const accessTokenExpiration = new Date()
+            accessTokenExpiration.setHours(accessTokenExpiration.getHours() + 1) // Hết hạn sau 1 giờ
+            const refreshTokenExpiration = new Date()
+            refreshTokenExpiration.setHours(refreshTokenExpiration.getHours() + 24) // Hết hạn sau 24 giờ
 
-      if (parsedTokenBody.roles === "admin") {
-        toast.success("Đăng nhập thành công");
-        navigate("/home-admin");
-      } else if (parsedTokenBody.roles === "user") {
-        toast.success("Đăng nhập thành công");
-        onClose();
-        navigate("/");
+            const accessTokenOptions = {
+                path: '/',
+                expires: accessTokenExpiration,
+            }
+
+            const refreshTokenOptions = {
+                path: '/',
+                expires: refreshTokenExpiration,
+            }
+
+        setCookie('accessToken', response.data.access_token, accessTokenOptions)
+        setCookie('refreshToken', response.data.refresh_token, refreshTokenOptions)
       }
+      handleSetTokens()
+
+        const tokenBody = response.data.access_token.split('.')[1]
+
+        // Giai ma body voi base64
+        const decodedTokenBody = atob(tokenBody)
+
+        // Giai ma cac phan tu JSON cua body
+        const parsedTokenBody = JSON.parse(decodedTokenBody)
+        // localStorage.setItem('infor', JSON.stringify(parsedTokenBody.infor))
+        // localStorage.setItem('role', JSON.stringify(parsedTokenBody.roles))
+
+        if (parsedTokenBody.roles === 'admin') {
+            toast.success('Đăng nhập thành công')
+            navigate('/home-admin')
+        } else if (parsedTokenBody.roles === 'user') {
+            toast.success('Đăng nhập thành công')
+            onClose()
+            navigate('/')
+        }
     } catch (error) {
         toast.error("Đăng nhập không thành công");
-      console.log(error);
+        console.log(error);
+      }
     }
-  };
   const [username, setUsername] = useState();
   const navigate = useNavigate();
   const onChangeUsername = (event) => {

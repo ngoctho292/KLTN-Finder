@@ -38,6 +38,7 @@ import PropTypes from "prop-types";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import axios from "axios";
+import { useCookies } from 'react-cookie'
 
 const style = {
   position: "absolute",
@@ -166,6 +167,7 @@ const HomePageAdmin = () => {
   const [light, setLight] = React.useState(true);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [selectedItem, setSelectedItem] = React.useState("Account");
+  const [cookies, setCookie, removeCookie] = useCookies(['accessToken', 'refreshToken'])
 
   const darkTheme = createTheme({
     palette: {
@@ -197,11 +199,12 @@ const HomePageAdmin = () => {
     setAnchorEl(null);
   };
 
-  const name = JSON.parse(localStorage.getItem("infor"));
+  // const name = JSON.parse(localStorage.getItem("infor"));
+  const name = cookies['accessToken']
 
   const handleLogout = () => {
-    localStorage.removeItem("infor");
-    localStorage.removeItem("role");
+    removeCookie('accessToken')
+    removeCookie('refreshToken')
     window.location.href = "/";
   };
   const [openProfile, setOpenProfile] = React.useState(false);

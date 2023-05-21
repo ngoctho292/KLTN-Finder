@@ -86,17 +86,12 @@ const signin = async (req, res) => {
             expiresIn: '1h',
         })
 
-        function calculateExpiryDate() {
-            const expiresInDays = 30 // Số ngày hết hạn của Refresh Token
-            const expiryDate = new Date()
-            expiryDate.setDate(expiryDate.getDate() + expiresInDays)
-            return expiryDate
-        }
-        const refreshToken = jsonwebtoken.sign(payload, process.env.TOKEN_SECRET)
-        res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000')
+        const refreshToken = jsonwebtoken.sign(payload, process.env.TOKEN_SECRET, {
+            expiresIn: '3h',
+        })
         res.cookie('accessToken', accessToken, {
             httpOnly: true,
-            maxAge: 1 * 30 * 60 * 1000,
+            maxAge: 1 * 60 * 60 * 1000,
             domain: 'localhost',
             // path: '/api/v1',
             // secure: true,
@@ -104,7 +99,7 @@ const signin = async (req, res) => {
         })
         res.cookie('refreshToken', refreshToken, {
             httpOnly: true,
-            maxAge: calculateExpiryDate(),
+            maxAge: 3 * 60 * 60 * 1000,
             domain: 'localhost',
             // path: '/api/v1',
             // secure: true,
@@ -112,7 +107,7 @@ const signin = async (req, res) => {
         })
         const refreshTokenDoc = new refreshtokenModel({
             token: refreshToken,
-            expiryDate: calculateExpiryDate(),
+            expiryDate: 3 * 60 * 60 * 1000,
             user: user.id,
         })
         // console.log(refreshTokenDoc)
@@ -183,8 +178,8 @@ const updatePassword = async (req, res) => {
 const getInfo = async (req, res) => {
     try {
         const user = await userModel.find({ roles: 'user' })
-
         if (!user) return responseHandler.notfound(res)
+        // res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000')
 
         responseHandler.ok(res, user)
     } catch {

@@ -6,7 +6,6 @@ import jsonwebtoken from 'jsonwebtoken'
 const tokenDecode = (req) => {
     try {
         const { accessToken } = req.cookies
-
         if (accessToken) {
             // Xác thực token
             return jsonwebtoken.verify(accessToken, process.env.TOKEN_SECRET)
@@ -21,6 +20,7 @@ const tokenDecode = (req) => {
 const auth = async (req, res, next) => {
     // Lấy token đã giải mã
     const tokenDecoded = tokenDecode(req)
+    // console.log(tokenDecoded);
     // Nếu không có token sẽ trả lỗi 401
     if (!tokenDecoded) return responseHandler.unauthorize(res, 'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại!')
 
@@ -37,9 +37,18 @@ const auth = async (req, res, next) => {
     next()
 }
 
-const verifyTokenAndRefresh = async (req, res, next) => {
-    const { accessToken } = req.cookies
+const isRefreshTokenExpired = (refreshToken) => {
+    if(!refreshToken) return true
+    const decoded = tokenDecode(refreshToken)
+    const expiryDate = new Date(decoded.exp * 1000) // Chuyển đổi từ timestamp thành đối tượng Date
 
+    // So sánh thời gian hiện tại với thời gian hết hạn của refresh token
+    return new Date() > expiryDate
+}
+
+
+const verifyTokenAndRefresh = async (req, res, next) => {
+    const { accessToken, refreshToken } = req.cookies
     try {
         // Kiểm tra tính hợp lệ của access token
         const decoded = jsonwebtoken.verify(accessToken, process.env.TOKEN_SECRET)
@@ -49,22 +58,30 @@ const verifyTokenAndRefresh = async (req, res, next) => {
         next()
     } catch (error) {
         if (error.name === 'JsonWebTokenError') {
-            // Access token đã hết hạn, kiểm tra refresh token
-            const { refreshToken } = req.cookies
-            console.log(refreshToken);
+            if (isRefreshTokenExpired(refreshToken)) {
+                // Xóa refresh token khỏi cơ sở dữ liệu
+                await refreshtokenModel.findOneAndDelete({ token: refreshToken })
+                // Xóa cookie refresh token từ client
+                res.clearCookie('refreshToken')
+                return responseHandler.unauthorize(res, 'Phiên làm việc đã hết hạn. Vui lòng đăng nhập lại!')
+            }
+
+            // if (!refreshToken) return responseHandler.unauthorize(res, 'Token không hợp lệ!')
             try {
                 // Kiểm tra tính hợp lệ của refresh token
                 const refreshTokenDoc = await refreshtokenModel.findOne({ token: refreshToken }).select('user token')
                 if (!refreshTokenDoc) {
-                    responseHandler.badrequest(res, 'Refresh token không hợp lệ')
+                    responseHandler.unauthorize(res, 'Refresh token không hợp lệ')
                 }
-                // for (const e of refreshTokenDoc) {
-                //     console.log(e);
-                // }
+
                 const user = await userModel
-                    .findById(refreshTokenDoc.user.id)
-                    .select('username password salt id displayName roles createdAt updatedAt')
-                if (!user) return responseHandler.badrequest(res, 'Token đã hết hạn. Vui lòng đăng nhập lại!')
+                    .findById(refreshTokenDoc.user)
+                    .select('username id displayName roles createdAt updatedAt')
+                if (!user) return responseHandler.badrequest(res, 'Token không hợp lệ!')
+
+                // Gỡ pass và hash ra khỏi response
+                user.password = undefined
+                user.salt = undefined
 
                 const payload = {
                     roles: user.roles,
@@ -80,29 +97,12 @@ const verifyTokenAndRefresh = async (req, res, next) => {
                 const newAccessToken = jsonwebtoken.sign(payload, process.env.TOKEN_SECRET, {
                     expiresIn: '1h',
                 })
-                const newRefreshToken = jsonwebtoken.sign(payload, process.env.TOKEN_SECRET)
-
-                function calculateExpiryDate() {
-                    const expiresInDays = 30 // Số ngày hết hạn của Refresh Token
-                    const expiryDate = new Date()
-                    expiryDate.setDate(expiryDate.getDate() + expiresInDays)
-                    return expiryDate
-                }
-
-                refreshTokenDoc.token = newRefreshToken
-                await refreshTokenDoc.save()
 
                 res.cookie('accessToken', newAccessToken, {
                     httpOnly: true,
                     maxAge: 1 * 60 * 60 * 1000,
-                    secure: true,
-                    sameSite: true,
-                })
-                res.cookie('refreshToken', newRefreshToken, {
-                    httpOnly: true,
-                    maxAge: calculateExpiryDate(),
-                    secure: true,
-                    sameSite: true,
+                    // secure: true,
+                    // sameSite: true,
                 })
 
                 req.user = user

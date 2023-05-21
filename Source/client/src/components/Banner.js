@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react'
-import ReactPlayer from 'react-player';
+// import ReactPlayer from 'react-player';
 
 
 import movies from '../asset/image/logomoives.png'
