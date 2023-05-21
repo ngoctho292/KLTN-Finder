@@ -54,19 +54,19 @@ const Login = ({onClose}) => {
         username,
         password,
       });
-      axios.defaults.withCredentials = true //cho phép lấy cookie từ server
-      console.log(res.data.access_token);
-
-      const tokenBody = res.data.access_token
-      // Lay body cua token
-
+      // axios.defaults.withCredentials = true //cho phép lấy cookie từ server
+      
+      localStorage.setItem('token', res.data.refresh_token)
+      const tokenBody = res.data.refresh_token.split('.')[1]
+      
       // Giai ma body voi base64
-      const decodedTokenBody = atob(tokenBody);
+      const decodedTokenBody = atob(tokenBody)
 
       // Giai ma cac phan tu JSON cua body
       const parsedTokenBody = JSON.parse(decodedTokenBody);
-      localStorage.setItem("infor", JSON.stringify(parsedTokenBody.infor));
-      localStorage.setItem("role", JSON.stringify(parsedTokenBody.roles));
+      localStorage.setItem('infor', JSON.stringify(parsedTokenBody.infor))
+      localStorage.setItem('role', JSON.stringify(parsedTokenBody.roles))
+
       if (parsedTokenBody.roles === "admin") {
         toast.success("Đăng nhập thành công");
         navigate("/home-admin");

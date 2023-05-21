@@ -49,18 +49,18 @@ const ManageUser = () => {
     const getUser = async () => {
       if (!isLoading) {
         try {
-          const token = localStorage.getItem("token");
-          const config = {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          };
-          const response = await axios.get(
-            "http://localhost:5000/api/v1/user/info",
-            config
-          );
-          setUsers(response.data);
-          setMainUsers(response.data);
+            const token = localStorage.getItem('token')
+            const config = {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            }
+            const response = await axios.get('http://localhost:5000/api/v1/user/info', { withCredentials: true})
+            // axios.defaults.withCredentials = true //cho phép lấy cookie từ server
+
+            console.log('oke123' + JSON.stringify(response))
+            setUsers(response.data)
+            setMainUsers(response.data)
         } catch (error) {
           console.error(error);
         }
