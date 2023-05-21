@@ -59,10 +59,13 @@ const removeFavorite = async (req, res) => {
 const getFavoritesOfUser = async (req, res) => {
     try {
         const userId = tokenMiddleware.tokenDecode(req).infor.id
+        if (!userId) return responseHandler.notfound(res, 'Không tìm thấy user')
         // Tìm user và sắp xếp kết quả theo thứ tự từ mới đến cũ
         const favorite = await favoriteModel.find({ userId }).sort('-createdAt')
+        if (!favorite) return responseHandler.notfound(res, `Không tìm thấy danh sách yêu thích của user`)
         responseHandler.ok(res, favorite)
-    } catch {
+    } catch (error) {
+        // console.log(error);
         responseHandler.error(res, 'Lấy danh sách yêu thích người dùng không thành công')
     }
 }
