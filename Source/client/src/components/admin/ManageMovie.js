@@ -6,6 +6,10 @@ import Avatar from '@mui/material/Avatar'
 import { DataGrid } from '@mui/x-data-grid'
 import InputBase from '@mui/material/InputBase'
 import SearchIcon from '@mui/icons-material/Search'
+import Dialog from '@mui/material/Dialog'
+import DialogContent from '@mui/material/DialogContent'
+import DialogContentText from '@mui/material/DialogContentText'
+import DialogTitle from '@mui/material/DialogTitle'
 import axios from 'axios'
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline'
 import { Box, Modal } from '@mui/material'
@@ -14,8 +18,34 @@ import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 
 const ManageMovie = () => {
-    const handleClick = () => {
-        console.log('oke123')
+    const [detail, setDetail] = React.useState()
+    const [movieId, setMovieId] = React.useState([])
+    const onMovieDetail = async () => {
+        try {
+            const res = await axios.get(`http://localhost:5000/api/v1/movies/${movieId}`)
+            console.log("oke"+JSON.stringify(res.data))
+            setDetail(res.data)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+    const [open, setOpen] = React.useState()
+    const handleOpen = () => {
+        setOpen(true)
+    }
+    const handleClose = () => {
+        setOpen(false)
+        setMovieId(null)
+    }
+    const handleClick = (value) => {
+        setMovieId([])
+        handleOpen()
+        const movieid = value.id;
+        console.log("thone"+movieid)
+        setMovieId(movieid)
+
+        onMovieDetail()
+        
     }
     const columns = useMemo(
         () => [
@@ -24,7 +54,7 @@ const ManageMovie = () => {
                 headerName: '',
                 width: 300,
                 renderCell: (params) => {
-                    console.log(params)
+                    // console.log(params)
                     return (
                         <>
                             <Avatar
@@ -40,7 +70,7 @@ const ManageMovie = () => {
                 field: 'title',
                 headerName: 'Title',
                 width: 140,
-                renderCell: (params) => <Link onClick={() => handleClick(params.value)}>{params.value}</Link>,
+                renderCell: (params) => <Link onClick={() => handleClick(params)}>{params.value}</Link>,
             },
             { field: 'duration', headerName: 'Duration', width: 100 },
             { field: 'release_date', headerName: 'Release Date', width: 100 },
@@ -50,7 +80,7 @@ const ManageMovie = () => {
                 width: 200,
                 renderCell: (params) => {
                     const durationArray = params.value
-                    console.log(JSON.stringify(durationArray))
+                    // console.log(JSON.stringify(durationArray))
                     return (
                         <span>
                             {durationArray.map((value) => (
@@ -65,7 +95,7 @@ const ManageMovie = () => {
         [],
     )
     const { movies } = useSelector((state) => state.app)
-    console.log(movies)
+    // console.log(movies)
 
     return (
         <div className="w-full">
@@ -115,6 +145,14 @@ const ManageMovie = () => {
                     // sx={{marginRight:100}}
                 />
             </div>
+            <Dialog fullWidth={true} maxWidth={'lg'} open={open} onClose={handleClose}>
+                <DialogTitle>Movie Details</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+
+                    </DialogContentText>
+                </DialogContent>
+            </Dialog>
         </div>
     )
 }
